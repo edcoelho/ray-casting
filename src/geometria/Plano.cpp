@@ -81,7 +81,7 @@ IntensidadeLuz Plano::cor_textura(Ponto3 ponto) {
     // Escolhendo índice com menor valor do vetor normal ao plano.
     for (int i = 0; i < 3; i++) {
 
-        if (this->normal[menor_indice] > this->normal[i]) {
+        if (std::abs(this->normal[menor_indice]) > std::abs(this->normal[i])) {
 
             menor_indice = i;
 

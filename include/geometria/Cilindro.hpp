@@ -28,17 +28,17 @@ class Cilindro : public Solido {
         // --- GETTERS E SETTERS ---
 
         Ponto3 get_centro_base() const;
-        void set_centro_base(Ponto3 cb);
+        void set_centro_base(Ponto3 cb, bool recalcular_atributos = true);
 
         Ponto3 get_centro_topo() const;
-        void set_centro_topo(Ponto3 ct);
+        void set_centro_topo(Ponto3 ct, bool recalcular_atributos = true);
 
         Vetor3 get_direcao() const;
         // Normaliza o vetor "d" antes de atribuir o seu valor ao vetor direção do cilíndro.
-        void set_direcao(Vetor3 d);
+        void set_direcao(Vetor3 d, bool recalcular_atributos = true);
 
         double get_altura() const;
-        void set_altura(double a);
+        void set_altura(double a, bool recalcular_atributos = true);
 
         double get_raio() const;
         void set_raio(double r);

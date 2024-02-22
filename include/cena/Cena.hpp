@@ -34,7 +34,7 @@ class Cena {
         // --- CONSTRUTORES ---
 
         // I: intensidade da luz ambiente
-        Cena(Camera camera = Camera(), IntensidadeLuz I_A = IntensidadeLuz(0.3, 0.3, 0.3));
+        Cena(Camera camera = Camera(), IntensidadeLuz I_A = IntensidadeLuz(0.0));
 
         // --- GETTERS E SETTERS ---
 

@@ -79,29 +79,30 @@ IntensidadeLuz RetanguloYZ::cor_textura(Ponto3 ponto) {
     std::size_t id_face = this->id_ultima_face_intersectada;
     Ponto3 coordenadas_baricentricas = this->ultima_face_intersectada.get_coordenadas_baricentricas();
     // Coordenadas de textura.
+    int x, y;
     std::size_t u, v;
     // Cor RGB do pixel da textura correspondende à intersecção.
     rgb cor_pixel;
 
     if (id_face == 1) {
 
-        u = std::floor(coordenadas_baricentricas[2] * this->get_material().get_textura()->get_largura_pixels() - 0.5);
+        y = std::floor(coordenadas_baricentricas[2] * this->get_material().get_textura()->get_largura_pixels() - 0.5);
 
-        v = std::floor(this->get_material().get_textura()->get_altura_pixels() - coordenadas_baricentricas[0] * this->get_material().get_textura()->get_altura_pixels() - 0.5);
-
-        // Obtendo a cor do pixel da textura.
-        cor_pixel = this->get_material().get_textura()->get_cor_pixel(v, u);
+        x = std::floor(this->get_material().get_textura()->get_altura_pixels() - coordenadas_baricentricas[0] * this->get_material().get_textura()->get_altura_pixels() - 0.5);
 
     } else {
 
-        u = std::floor((coordenadas_baricentricas[0] + coordenadas_baricentricas[2]) * this->get_material().get_textura()->get_largura_pixels() - 0.5);
+        y = std::floor((coordenadas_baricentricas[0] + coordenadas_baricentricas[2]) * this->get_material().get_textura()->get_largura_pixels() - 0.5);
 
-        v = std::floor(this->get_material().get_textura()->get_altura_pixels() - (coordenadas_baricentricas[0] + coordenadas_baricentricas[1]) * this->get_material().get_textura()->get_altura_pixels() - 0.5);
-
-        // Obtendo a cor do pixel da textura.
-        cor_pixel = this->get_material().get_textura()->get_cor_pixel(v, u);
+        x = std::floor(this->get_material().get_textura()->get_altura_pixels() - (coordenadas_baricentricas[0] + coordenadas_baricentricas[1]) * this->get_material().get_textura()->get_altura_pixels() - 0.5);
 
     }
+
+    v = x < 0 ? 0 : x;
+    u = y < 0 ? 0 : y;
+
+    // Obtendo a cor do pixel da textura.
+    cor_pixel = this->get_material().get_textura()->get_cor_pixel(v, u);
 
     return IntensidadeLuz(cor_pixel);
 

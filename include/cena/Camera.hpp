@@ -39,13 +39,13 @@ class Camera {
         // --- GETTERS E SETTERS ---
 
             Ponto3 get_posicao() const;
-            void set_posicao(Ponto3 p);
+            void set_posicao(Ponto3 p, bool atualizar_matrizes = true);
 
             Ponto3 get_ponto_visada() const;
-            void set_ponto_visada(Ponto3 pv);
+            void set_ponto_visada(Ponto3 pv, bool atualizar_matrizes = true);
 
             Ponto3 get_ponto_amarra() const;
-            void set_ponto_amarra(Ponto3 pa);
+            void set_ponto_amarra(Ponto3 pa, bool atualizar_matrizes = true);
 
             double get_x_max() const;
             void set_x_max(double x);

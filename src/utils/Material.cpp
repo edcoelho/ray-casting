@@ -1,7 +1,8 @@
 #include "utils/Material.hpp"
 
-Material::Material(IntensidadeLuz ka, IntensidadeLuz kd, IntensidadeLuz ke, double espelhamento) {
+Material::Material(std::string nome, IntensidadeLuz ka, IntensidadeLuz kd, IntensidadeLuz ke, double espelhamento) {
 
+    this->nome = nome;
     this->k_A = ka;
     this->k_D = kd;
     this->k_E = ke;
@@ -9,13 +10,20 @@ Material::Material(IntensidadeLuz ka, IntensidadeLuz kd, IntensidadeLuz ke, doub
 
 }
 
-Material::Material(std::shared_ptr<Textura> textura) {
+Material::Material(std::string nome, std::shared_ptr<Textura> textura) {
 
+    this->nome = nome;
     this->textura = std::move(textura);
     this->k_A = IntensidadeLuz(1.0);
     this->k_D = IntensidadeLuz(0.7);
     this->k_E = IntensidadeLuz(0.0);
     this->espelhamento = 0.0;
+
+}
+
+std::string Material::get_nome() const {
+
+    return this->nome;
 
 }
 

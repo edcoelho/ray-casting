@@ -2,7 +2,6 @@
 #define ALGEBRA_PONTO3_HPP
 
 #include "Vetor3.hpp"
-#include <array>
 
 // Ponto num espaço tridimensional. Inicializa na origem do sistema de coordenadas por padrão.
 class Ponto3 {

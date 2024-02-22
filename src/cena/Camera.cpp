@@ -51,10 +51,10 @@ Ponto3 Camera::get_posicao() const {
     return this->posicao;
 
 }
-void Camera::set_posicao(Ponto3 p) {
+void Camera::set_posicao(Ponto3 p, bool atualizar_matrizes) {
 
     this->posicao = p;
-    this->recalcular_matrizes();
+    if (atualizar_matrizes) this->recalcular_matrizes();
 
 }
 
@@ -63,10 +63,10 @@ Ponto3 Camera::get_ponto_visada() const {
     return this->ponto_visada;
 
 }
-void Camera::set_ponto_visada(Ponto3 pv) {
+void Camera::set_ponto_visada(Ponto3 pv, bool atualizar_matrizes) {
 
     this->ponto_visada = pv;
-    this->recalcular_matrizes();
+    if (atualizar_matrizes) this->recalcular_matrizes();
 
 }
 
@@ -75,10 +75,10 @@ Ponto3 Camera::get_ponto_amarra() const {
     return this->ponto_amarra;
 
 }
-void Camera::set_ponto_amarra(Ponto3 pa) {
+void Camera::set_ponto_amarra(Ponto3 pa, bool atualizar_matrizes) {
 
     this->ponto_amarra = pa;
-    this->recalcular_matrizes();
+    if(atualizar_matrizes) this->recalcular_matrizes();
 
 }
 

@@ -3,9 +3,16 @@
 #include <string>
 #include <SDL2/SDL.h>
 
-Textura::Textura(const char* arquivo) {
+Textura::Textura(std::string nome, std::string arquivo) {
 
-    this->carregar_imagem(arquivo);
+    this->nome = nome;
+    this->carregar_imagem(arquivo.c_str());
+
+}
+
+std::string Textura::get_nome() const {
+
+    return this->nome;
 
 }
 

@@ -38,15 +38,20 @@ Ponto3 Cilindro::get_centro_base() const {
     return this->centro_base;
 
 }
-void Cilindro::set_centro_base(Ponto3 cb) {
+void Cilindro::set_centro_base(Ponto3 cb, bool recalcular_atributos) {
 
     Vetor3 vetor_altura;
 
     this->centro_base = cb;
-    vetor_altura = this->get_centro_topo() - cb;
 
-    this->set_direcao(vetor_altura);
-    this->set_altura(vetor_altura.norma());
+    if (recalcular_atributos) {
+
+        vetor_altura = this->get_centro_topo() - cb;
+
+        this->direcao = vetor_altura.unitario();
+        this->altura = vetor_altura.norma();
+
+    }
 
 }
 
@@ -55,15 +60,20 @@ Ponto3 Cilindro::get_centro_topo() const {
     return this->centro_topo;
 
 }
-void Cilindro::set_centro_topo(Ponto3 ct) {
+void Cilindro::set_centro_topo(Ponto3 ct, bool recalcular_atributos) {
 
     Vetor3 vetor_altura;
 
     this->centro_topo = ct;
-    vetor_altura = ct - this->get_centro_base();
 
-    this->set_direcao(vetor_altura);
-    this->set_altura(vetor_altura.norma());
+    if (recalcular_atributos) {
+
+        vetor_altura = ct - this->get_centro_base();
+
+        this->direcao = vetor_altura.unitario();
+        this->altura = vetor_altura.norma();
+
+    }
 
 }
 
@@ -72,12 +82,16 @@ Vetor3 Cilindro::get_direcao() const {
     return this->direcao;
 
 }
-void Cilindro::set_direcao(Vetor3 d) {
+void Cilindro::set_direcao(Vetor3 d, bool recalcular_atributos) {
 
     d.normalizar();
     this->direcao = d;
 
-    this->set_centro_topo(this->get_centro_base() + (d * this->get_altura()));
+    if (recalcular_atributos) {
+
+        this->centro_topo = this->get_centro_base() + (d * this->get_altura());
+
+    }
 
 }
 
@@ -86,11 +100,15 @@ double Cilindro::get_altura() const {
     return this->altura;
 
 }
-void Cilindro::set_altura(double a) {
+void Cilindro::set_altura(double a, bool recalcular_atributos) {
 
     this->altura = a;
 
-    this->set_centro_topo(this->get_centro_base() + (this->get_direcao() * a));
+    if (recalcular_atributos) {
+
+        this->centro_topo = this->get_centro_base() + (this->get_direcao() * a);
+
+    }
 
 }
 

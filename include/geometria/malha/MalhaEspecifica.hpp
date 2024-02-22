@@ -19,7 +19,7 @@ class MalhaEspecifica : public Malha {
 
         // --- CONSTRUTORES ---
 
-            MalhaEspecifica(const char* nome = "Malha", Material material = Material());
+            MalhaEspecifica(std::string nome = "Malha", Material material = Material());
 
 };
 

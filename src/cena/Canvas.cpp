@@ -4,17 +4,27 @@
 
 Canvas::Canvas(std::size_t altura, std::size_t largura, rgb cor_padrao) {
 
-    this->set_altura(altura);
-    this->set_largura(largura);
-    this->set_cor_padrao(cor_padrao);
+    this->altura = altura;
+    this->largura = largura;
+    this->cor_padrao = cor_padrao;
 
-    for (std::size_t i = 0; i < altura; i++) {
+    this->inicializar_matrizes();
+
+}
+
+void Canvas::inicializar_matrizes() {
+
+    this->pixel_buffer.clear();
+    this->matriz_solidos.clear();
+    this->matriz_solidos.clear();
+
+    for (std::size_t i = 0; i < this->altura; i++) {
 
         this->pixel_buffer.push_back(std::vector<rgb>());
         this->matriz_solidos.push_back(std::vector<std::shared_ptr<Solido>>());
         this->matriz_malhas.push_back(std::vector<std::shared_ptr<Malha>>());
 
-        for (std::size_t j = 0; j < largura; j++) {
+        for (std::size_t j = 0; j < this->largura; j++) {
 
             this->pixel_buffer[i].push_back(cor_padrao);
             this->matriz_solidos[i].push_back(nullptr);
@@ -31,9 +41,11 @@ std::size_t Canvas::get_altura() const {
     return this->altura;
 
 }
-void Canvas::set_altura(double a) {
+void Canvas::set_altura(double a, bool reiniciar_matrizes) {
 
     this->altura = a;
+
+    if (reiniciar_matrizes) this->inicializar_matrizes();
 
 }
 
@@ -42,9 +54,11 @@ std::size_t Canvas::get_largura() const {
     return this->largura;
 
 }
-void Canvas::set_largura(double l) {
+void Canvas::set_largura(double l, bool reiniciar_matrizes) {
 
     this->largura = l;
+    
+    if (reiniciar_matrizes) this->inicializar_matrizes();
 
 }
 

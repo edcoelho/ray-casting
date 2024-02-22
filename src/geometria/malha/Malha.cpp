@@ -17,7 +17,7 @@ Face::Face(std::size_t id_aresta1, std::size_t id_aresta2, std::size_t id_aresta
 
 }
 
-Malha::Malha(const char* nome, Material material) {
+Malha::Malha(std::string nome, Material material) {
 
     this->nome = nome;
     this->material = material;
@@ -29,7 +29,7 @@ std::string Malha::get_nome() const {
     return this->nome;
 
 }
-void Malha::set_nome(const char* nome) {
+void Malha::set_nome(std::string nome) {
 
     this->nome = nome;
 
@@ -297,13 +297,46 @@ void Malha::rotacionar(double angulo, Ponto3 ponto_eixo, Vetor3 direcao_eixo) {
 void Malha::rotacionar(double angulo, Ponto3 ponto_eixo, Vetor3 direcao_eixo) {
 
     Matriz4 matriz_r;
-    Vetor3 i, j, k;
+    Vetor3 i, j, k, aux;
     double cos_angulo, sen_angulo, i_escalar_p, j_escalar_p, k_escalar_p, a, b, c, d, e, f;
+    // Índice com menor valor no vetor direcao.
+    std::size_t menor_indice = 0;
 
-    k = direcao_eixo.unitario();
-    j = (k * Vetor3(-k[1], k[0], 0.0)).unitario();
+    direcao_eixo.normalizar();
+
+    k = direcao_eixo;
+
+    // Escolhendo índice com menor valor do vetor direção.
+    for (int ind = 0; ind < 3; ind++) {
+
+        if (std::abs(direcao_eixo[menor_indice]) > std::abs(direcao_eixo[ind])) {
+
+            menor_indice = ind;
+
+        }
+        
+    }
+
+    // Trocando os dois maiores valores do vetor direcao de lugar e invertendo o sinal de um dos valores para obter um vetor ortogonal.
+    if (menor_indice == 0) {
+
+        aux[1] = direcao_eixo[2];
+        aux[2] = -direcao_eixo[1];
+
+    } else if (menor_indice == 1) {
+
+        aux[0] = direcao_eixo[2];
+        aux[2] = -direcao_eixo[0];
+
+    } else {
+
+        aux[0] = direcao_eixo[1];
+        aux[1] = -direcao_eixo[0];
+
+    }
+
+    j = (k * aux).unitario();
     i = (j * k).unitario();
-
 
     // Valores repetidos com frequência no cálculo da matriz.
 

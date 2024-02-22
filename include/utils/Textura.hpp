@@ -2,10 +2,14 @@
 #define UTILS_TEXTURA_HPP
 
 #include "utils/tipos.hpp"
+#include <string>
 
 class Textura {
 
     private:
+
+        // Nome da textura
+        std::string nome;
 
         // Altura da textura em pixels.
         std::size_t altura_pixels;
@@ -19,9 +23,11 @@ class Textura {
 
         // --- CONSTRUTORES ---
 
-            Textura(const char* arquivo = "texturas/horacio.bmp");
+            Textura(std::string nome = std::string("horacio"), std::string arquivo = std::string("texturas/horacio.bmp"));
         
         // --- GETTERS E SETTERS ---
+
+            std::string get_nome() const;
 
             std::size_t get_altura_pixels() const;
 

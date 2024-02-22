@@ -1,0 +1,308 @@
+{
+
+    "camera": {
+
+        "posicao": [0.0, 0.0, 0.0],
+        "lookat": [0.0, 0.0, 0.0],
+        "viewup": [0.0, 0.0, 0.0],
+        "xmax": 0.0,
+        "xmin": 0.0,
+        "ymax": 0.0,
+        "ymin": 0.0,
+        "distancia_focal": 0.0
+
+    },
+
+    "texturas": [
+        
+        {
+        
+            "nome": "nome_textura1",
+            "arquivo": "caminho/para/arquivo/.bmp"
+
+        }
+    
+    ],
+
+    "materiais": [
+
+        {
+
+            "nome": "nome_material1",
+            "k_ambiente": [0.0, 0.0, 0.0],
+            "k_difusa": [0.0, 0.0, 0.0],
+            "k_especular": [0.0, 0.0, 0.0],
+            "exp_especularidade": 0.0
+
+        },
+
+        {
+
+            "nome": "nome_material2",
+            "textura": "nome_textura"
+
+        }
+
+    ],
+
+    "luzes": {
+
+        "ambiente": [0.0, 0.0, 0.0],
+
+        "pontuais": [
+
+            {
+
+                "posicao": [0.0, 0.0, 0.0],
+                "intensidade": [0.0, 0.0, 0.0],
+                "atenuacao_a": 0.0,
+                "atenuacao_b": 0.0,
+                "atenuacao_c": 1.0
+                
+            }
+
+        ],
+
+        "spots": [
+
+            {
+
+                "direcao": [0.0, 0.0, 0.0],
+                "abertura": 0.0,
+                "posicao": [0.0, 0.0, 0.0],
+                "intensidade": [0.0, 0.0, 0.0],
+                "atenuacao_a": 0.0,
+                "atenuacao_b": 0.0,
+                "atenuacao_c": 1.0
+
+            }
+
+        ],
+
+        "direcionais": [
+
+            {
+
+                "direcao": [0.0, -1.0, -1.0],
+                "intensidade": [0.0, 0.0, 0.0]
+    
+            }
+
+        ]
+
+    },
+    
+    "solidos": {
+
+        "planos": [
+
+            {
+
+                "ponto_conhecido": [0.0, 0.0, 0.0],
+                "vetor_normal": [0.0, 1.0, 0.0],
+                "material": "nome_material1"
+
+            }
+
+        ],
+
+        "esferas": [
+
+            {
+
+                "centro": [0.0, 0.0, 0.0],
+                "raio": 1.0,
+                "material": "nome_material1"
+
+            }
+
+        ],
+
+        "cilindros": [
+
+            {
+
+                "centro_base": [0.0, 0.0, 0.0],
+                "direcao": [0.0, 1.0, 0.0],
+                "raio": 1.0,
+                "altura": 1.0,
+                "material": "nome_material1"
+
+            }
+
+        ],
+
+        "cones": [
+
+            {
+
+                "centro_base": [0.0, 0.0, 0.0],
+                "direcao": [0.0, 1.0, 0.0],
+                "raio": 0.0,
+                "altura": 1.0,
+                "material": "nome_material1"
+
+            }
+
+        ],
+
+        "triangulos": [
+
+            {
+
+                "vertice1": [0.0, 0.0, 0.0],
+                "vertice2": [0.0, 0.0, 0.0],
+                "vertice3": [0.0, 0.0, 0.0],
+                "material": "nome_material1"
+
+            }
+
+        ]
+
+    },
+
+    "malhas": [
+
+        {
+
+            "arquivo": "caminho/para/arquivo/.json",
+            "material": "nome_material1",
+            "transformacoes": [
+
+                {
+
+                    "tipo": "translacao",
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+
+                },
+
+                {
+
+                    "tipo": "rotacao",
+                    "angulo": 0.0,
+                    "eixo": "x"
+
+                },
+
+                {
+
+                    "tipo": "rotacao_arbitraria",
+                    "angulo": 0.0,
+                    "ponto_eixo": [0.0, 0.0, 0.0],
+                    "direcao_eixo": [0.0, 1.0, 0.0]
+
+                },
+
+                {
+
+                    "tipo": "escala",
+                    "fator_x": 0.0,
+                    "fator_y": 0.0,
+                    "fator_z": 0.0,
+                    "ponto_amarra": [0.0, 0.0, 0.0]
+
+                },
+
+                {
+
+                    "tipo": "cisalhamento",
+                    "angulo": 0.0,
+                    "eixo1": "x",
+                    "eixo2": "y",
+                    "ponto_amarra": [0.0, 0.0, 0.0]
+
+                },
+
+                {
+
+                    "tipo": "reflexao",
+                    "eixo1": "x",
+                    "eixo2": "y"
+
+                },
+
+                {
+
+                    "tipo": "reflexao_arbitraria",
+                    "vetor_normal_plano": [0.0, 1.0, 0.0],
+                    "ponto_plano": [0.0, 0.0, 0.0]
+
+                }
+
+            ]
+
+        },
+
+        {
+            
+            "tipo": "retangulo",
+            "plano": "xy",
+            "centro_base": [0.0, 0.0, 0.0],
+            "largura": 1.0,
+            "altura": 1.0,
+            "material": "nome_material1",
+            "normal_sentido_positivo": true,
+
+            "transformacoes": []
+
+        },
+
+        {
+            
+            "tipo": "retangulo",
+            "plano": "xz",
+            "centro_base": [0.0, 0.0, 0.0],
+            "largura": 1.0,
+            "altura": 1.0,
+            "material": "nome_material1",
+            "normal_sentido_positivo": true,
+
+            "transformacoes": []
+
+        },
+
+        {
+            
+            "tipo": "retangulo",
+            "plano": "yz",
+            "centro_base": [0.0, 0.0, 0.0],
+            "largura": 1.0,
+            "altura": 1.0,
+            "material": "nome_material1",
+            "normal_sentido_positivo": true,
+
+            "transformacoes": []
+
+        },
+
+        {
+
+            "tipo": "paralelepipedo",
+            "centro_base": [0.0, 0.0, 0.0],
+            "largura_base": 1.0,
+            "comprimento_base": 1.0,
+            "altura": 1.0,
+            "material": "nome_material1",
+
+            "transformacoes": []
+
+        },
+
+        {
+
+            "tipo": "piramide",
+            "centro_base": [0.0, 0.0, 0.0],
+            "largura_base": 1.0,
+            "comprimento_base": 1.0,
+            "altura": 1.0,
+            "material": "nome_material1",
+
+            "transformacoes": []
+
+        }
+
+    ]
+
+}

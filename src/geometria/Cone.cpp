@@ -38,15 +38,20 @@ Ponto3 Cone::get_centro_base() const {
     return this->centro_base;
 
 }
-void Cone::set_centro_base(Ponto3 cb) {
+void Cone::set_centro_base(Ponto3 cb, bool recalcular_atributos) {
 
     Vetor3 vetor_altura;
 
     this->centro_base = cb;
-    vetor_altura = this->get_vertice() - cb;
 
-    this->set_direcao(vetor_altura);
-    this->set_altura(vetor_altura.norma());
+    if (recalcular_atributos) {
+
+        vetor_altura = this->get_vertice() - cb;
+
+        this->direcao = vetor_altura;
+        this->altura = vetor_altura.norma();
+
+    }
 
 }
 
@@ -55,15 +60,20 @@ Ponto3 Cone::get_vertice() const {
     return this->vertice;
 
 }
-void Cone::set_vertice(Ponto3 v) {
+void Cone::set_vertice(Ponto3 v, bool recalcular_atributos) {
 
     Vetor3 vetor_altura;
 
     this->vertice = v;
-    vetor_altura = v - this->get_centro_base();
 
-    this->set_direcao(vetor_altura);
-    this->set_altura(vetor_altura.norma());
+    if (recalcular_atributos) {
+
+        vetor_altura = v - this->get_centro_base();
+
+        this->direcao = vetor_altura;
+        this->altura = vetor_altura.norma();
+
+    }
 
 }
 
@@ -72,11 +82,16 @@ Vetor3 Cone::get_direcao() const {
     return this->direcao;
 
 }
-void Cone::set_direcao(Vetor3 d) {
+void Cone::set_direcao(Vetor3 d, bool recalcular_atributos) {
 
     d.normalizar();
     this->direcao = d;
-    this->set_vertice(this->get_centro_base() + (d * this->get_altura()));
+
+    if (recalcular_atributos) {
+
+        this->vertice = this->get_centro_base() + (d * this->get_altura());
+
+    }
 
 }
 
@@ -96,10 +111,15 @@ double Cone::get_altura() const {
     return this->altura;
 
 }
-void Cone::set_altura(double a) {
+void Cone::set_altura(double a, bool recalcular_atributos) {
 
     this->altura = a;
-    this->set_vertice(this->get_centro_base() + (this->get_direcao() * a));
+
+    if (recalcular_atributos) {
+
+        this->vertice = this->get_centro_base() + (this->get_direcao() * a);
+
+    }
 
 }
 

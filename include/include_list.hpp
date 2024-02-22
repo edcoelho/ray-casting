@@ -3,12 +3,16 @@
 
 // Bibliotecas externas
 #include <SDL2/SDL.h>
+#include <nlohmann/json.hpp>
 
 // Biblioteca padrão do C++
 #include <vector>
 #include <array>
 #include <memory>
 #include <cmath>
+#include <fstream>
+#include <stdexcept>
+#include <string>
 
 // Headers implementados
 #include "utils/tipos.hpp"

@@ -53,12 +53,12 @@ class Malha {
 
         // --- CONSTRUTORES ---
 
-            Malha(const char* nome = "Malha", Material material = Material());
+            Malha(std::string nome = "Malha", Material material = Material());
 
         // --- GETTERS E SETTERS ---
 
             std::string get_nome() const;
-            void set_nome(const char* nome);
+            void set_nome(std::string nome);
 
             Material get_material() const;
             void set_material(Material m);

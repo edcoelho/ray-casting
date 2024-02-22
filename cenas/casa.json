@@ -1,0 +1,372 @@
+{
+
+    "camera": {
+        "posicao": [350.0, 150.0, 0.0],
+        "lookat": [300, 50.0, 250.0],
+        "viewup": [250, 500.0, 250.0],
+        "xmax": 30.0,
+        "xmin": -30.0,
+        "ymax": 30.0,
+        "ymin": -30.0,
+        "distancia_focal": 30.0
+    },
+
+    "texturas": [
+
+        {
+            "nome": "grama",
+            "arquivo": "texturas/grama.bmp"
+        },
+
+        {
+            "nome": "porta",
+            "arquivo": "texturas/porta.bmp"
+        },
+        
+        {
+            "nome": "tapete",
+            "arquivo": "texturas/tapete.bmp"
+        },
+
+        {
+            "nome": "janela",
+            "arquivo": "texturas/janela.bmp"
+        }
+
+    ],
+
+    "materiais": [
+
+        {
+            "nome": "parede",
+            "k_ambiente": [0.588, 0.482, 0.714],
+            "k_difusa": [0.588, 0.482, 0.714],
+            "k_especular": [0.5, 0.5, 0.5],
+            "exp_especularidade": 10.0
+        },
+        
+        {
+            "nome": "telhado",
+            "k_ambiente": [0.722, 0.259, 0.129],
+            "k_difusa": [0.722, 0.259, 0.129],
+            "k_especular": [0.2, 0.2, 0.2],
+            "exp_especularidade": 10.0
+        },
+
+        {
+            "nome": "madeira",
+            "k_ambiente": [0.251, 0.184, 0.114],
+            "k_difusa": [0.251, 0.184, 0.114],
+            "k_especular": [0.0, 0.0, 0.0],
+            "exp_especularidade": 0.0
+        },
+
+        {
+
+            "nome": "folha",
+            "k_ambiente": [0.361, 0.663, 0.016],
+            "k_difusa": [0.361, 0.663, 0.016],
+            "k_especular": [0.0, 0.0, 0.0],
+            "exp_especularidade": 0.0
+
+        },
+
+        {
+            "nome": "estrela",
+            "k_ambiente": [1, 0.98, 0.525],
+            "k_difusa": [1, 0.98, 0.525],
+            "k_especular": [1, 0.98, 0.525],
+            "exp_especularidade": 3.0
+        },
+
+        {
+            "nome": "ferro",
+            "k_ambiente": [0.557, 0.557, 0.557],
+            "k_difusa": [0.557, 0.557, 0.557],
+            "k_especular": [0.7, 0.7, 0.7],
+            "exp_especularidade": 5.0
+        },
+
+        {
+            "nome": "asfalto",
+            "k_ambiente": [0.184, 0.169, 0.173],
+            "k_difusa": [0.184, 0.169, 0.173],
+            "k_especular": [0.0, 0.0, 0.0],
+            "exp_especularidade": 0.0
+        },
+
+        {
+            "nome": "grama",
+            "textura": "grama"
+        },
+
+        {
+            "nome": "porta",
+            "textura": "porta"
+        },
+
+        {
+            "nome": "tapete",
+            "textura": "tapete"
+        },
+
+        {
+            "nome": "janela",
+            "textura": "janela"
+        }
+    ],
+
+    "luzes": {
+
+        "ambiente": [0.25, 0.25, 0.25],
+
+        "pontuais": [],
+
+        "spots": [
+
+            {
+                "direcao": [0.0,-1.0, 0.0],
+                "abertura": 1.57079632679,
+                "posicao": [250.0, 179.0, 70.0],
+                "intensidade": [0.6, 0.6, 0.6],
+                "atenuacao_a": 0.0,
+                "atenuacao_b": 0.0,
+                "atenuacao_c": 1.0
+            }
+
+        ],
+
+        "direcionais": []
+
+    },
+
+    "solidos": {
+        "planos": [
+
+            {
+                "ponto_conhecido": [0.0, 0.0, 0.0],
+                "vetor_normal": [0.0, 1.0, 0.0],
+                "material": "grama"
+            }
+
+        ],
+
+        "cilindros": [
+
+            {
+                "centro_base": [250.0, 0.0, 40.0],
+                "direcao": [0.0, 1.0, 0.0],
+                "raio": 10.0,
+                "altura": 200,
+                "material": "ferro"
+            },
+
+            {
+                "centro_base": [250.0, 190.0, 40.0],
+                "direcao": [0.0, 0.0, 1.0],
+                "raio": 10.0,
+                "altura": 80,
+                "material": "ferro"
+            },
+
+            {
+                "centro_base": [450.0, 0.0, 250.0],
+                "direcao": [0.0, 1.0, 0.0],
+                "raio": 10.0,
+                "altura": 50,
+                "material": "madeira"
+            }
+
+        ],
+
+        "cones": [
+
+            {
+                "centro_base": [450.0, 50.0, 250.0],
+                "direcao": [0.0, 1.0, 0.0],
+                "raio": 80.0,
+                "altura": 150,
+                "material": "folha"
+            }
+
+        ],
+
+        "esferas": [
+
+            {
+                "centro": [450.0, 210.0, 250.0],
+                "raio": 10.0,
+                "material": "estrela"
+            }
+
+        ]
+    },
+
+    "malhas": [
+
+        {
+            "tipo": "paralelepipedo",
+            "centro_base": [250.0, 0.0, 250.0],
+            "largura_base": 75.0,
+            "comprimento_base": 50.0,
+            "altura": 50.0,
+            "material": "parede",
+
+            "transformacoes": [
+
+                {
+
+                    "tipo": "escala",
+                    "fator_x": 2.0,
+                    "fator_y": 2.0,
+                    "fator_z": 2.0,
+                    "ponto_amarra": [250.0, 0.0, 250.0]
+
+                }
+
+            ]
+        },
+
+        {
+            "tipo": "piramide",
+            "centro_base": [250.0, 100.0, 250.0],
+            "largura_base": 170.0,
+            "comprimento_base": 120.0,
+            "altura": 70.0,
+            "material": "telhado"
+
+        },
+
+        {
+            "tipo": "retangulo",
+            "plano": "xy",
+            "centro_base": [250.0, 0.0, 199.0],
+            "largura": 24.0,
+            "altura": 50.0,
+            "material": "porta",
+            "normal_sentido_positivo": false
+        },
+
+        {
+            
+            "tipo": "retangulo",
+            "plano": "xz",
+            "centro_base": [0.0, 0.0, -18.0],
+            "largura": 24.0,
+            "altura": 18.0,
+            "material": "tapete",
+            "normal_sentido_positivo": true,
+
+            "transformacoes": [
+
+                {
+
+                    "tipo": "rotacao",
+                    "angulo": 3.14159265359,
+                    "eixo": "y"
+
+                },
+
+                {
+
+                    "tipo": "translacao",
+                    "x": 250.0,
+                    "y": 1.0,
+                    "z": 176.0
+
+                }
+
+            ]
+
+        },
+
+        {
+            "tipo": "retangulo",
+            "plano": "xy",
+            "centro_base": [292.0, 25.0, 199.0],
+            "largura": 20.0,
+            "altura": 20.0,
+            "material": "janela",
+            "normal_sentido_positivo": false,
+
+            "transformacoes": [
+
+                {
+                    "tipo": "rotacao_arbitraria",
+                    "angulo": 0.78539816339,
+                    "ponto_eixo": [292.0, 25.0, 199.0],
+                    "direcao_eixo": [0.0, 0.0, -1.0]
+                },
+
+                {
+                    "tipo": "translacao",
+                    "x": 0.0,
+                    "y": 15.0,
+                    "z": 0.0
+                }
+
+            ]
+        },
+
+        {
+            "tipo": "retangulo",
+            "plano": "xy",
+            "centro_base": [292.0, 25.0, 199.0],
+            "largura": 20.0,
+            "altura": 20.0,
+            "material": "janela",
+            "normal_sentido_positivo": false,
+
+            "transformacoes": [
+
+                {
+                    "tipo": "rotacao_arbitraria",
+                    "angulo": 0.78539816339,
+                    "ponto_eixo": [292.0, 25.0, 199.0],
+                    "direcao_eixo": [0.0, 0.0, -1.0]
+                },
+
+                {
+                    "tipo": "translacao",
+                    "x": 0.0,
+                    "y": 15.0,
+                    "z": 0.0
+                },
+
+                {
+
+                    "tipo": "reflexao_arbitraria",
+                    "vetor_normal_plano": [1.0, 0.0, 0.0],
+                    "ponto_plano": [250.0, 0.0, 250.0]
+
+                }
+
+            ]
+        },
+
+        {
+            "tipo": "paralelepipedo",
+            "centro_base": [137.5, 0.0, 250.0],
+            "largura_base": 75.0,
+            "comprimento_base": 100.0,
+            "altura": 10.0,
+            "material": "madeira",
+
+            "transformacoes": [
+                
+                {
+
+                    "tipo": "cisalhamento",
+                    "angulo": 1.0471975512,
+                    "eixo1": "z",
+                    "eixo2": "x",
+                    "ponto_amarra": [137.5, 0.0, 250.0]
+
+                }
+                
+            ]
+        }
+
+    ]
+
+}

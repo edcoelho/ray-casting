@@ -48,6 +48,9 @@ class Canvas {
             // Menu para alterar malha.
             void menu_interativo(std::shared_ptr<Malha> malha);
 
+            // Reinicia as matrizes internas.
+            void inicializar_matrizes();
+
     public:
 
         // --- CONSTRUTORES ---
@@ -57,10 +60,10 @@ class Canvas {
         // --- GETTERS E SETTERS ---
 
             std::size_t get_altura() const;
-            void set_altura(double a);
+            void set_altura(double a, bool reiniciar_matrizes = true);
 
             std::size_t get_largura() const;
-            void set_largura(double l);
+            void set_largura(double l, bool reiniciar_matrizes = true);
 
             rgb get_cor_padrao() const;
             void set_cor_padrao(rgb c);

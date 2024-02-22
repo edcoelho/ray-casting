@@ -5,10 +5,14 @@
 #include "utils/Textura.hpp"
 
 #include <memory>
+#include <string>
 
 class Material {
 
     private:
+
+        std::string nome;
+
         // K ambiente
         IntensidadeLuz k_A;
         // K difusão
@@ -24,11 +28,13 @@ class Material {
 
         // --- CONSTRUTORES ---
 
-        Material(IntensidadeLuz ka = IntensidadeLuz(1.0, 1.0, 1.0), IntensidadeLuz kd = IntensidadeLuz(0.7, 0.7, 0.7), IntensidadeLuz ke = IntensidadeLuz(1.0, 1.0, 1.0), double espelhamento = 10.0);
+        Material(std::string nome = std::string("padrao"), IntensidadeLuz ka = IntensidadeLuz(1.0, 1.0, 1.0), IntensidadeLuz kd = IntensidadeLuz(0.7, 0.7, 0.7), IntensidadeLuz ke = IntensidadeLuz(1.0, 1.0, 1.0), double espelhamento = 10.0);
 
-        Material(std::shared_ptr<Textura> textura);
+        Material(std::string nome, std::shared_ptr<Textura> textura);
 
         // --- GETTERS E SETTERS ---
+
+        std::string get_nome() const;
 
         IntensidadeLuz get_k_A();
         void set_k_A(IntensidadeLuz k);
