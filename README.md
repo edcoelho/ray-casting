@@ -5,8 +5,7 @@ Este projeto foi desenvolvido para a disciplina de Computação Gráfica I (CK02
 
 ## Dependências
 
-O projeto depende das bibliotecas [SDL2](https://github.com/libsdl-org/SDL) e [nlohmann/json](https://github.com/nlohmann/json). Também é necessário utilizar alguma distribuição Linux como sistema operacional.
-
+O projeto utiliza a API gráfica [OpenGL](https://www.opengl.org/) e depende das bibliotecas [SDL2](https://github.com/libsdl-org/SDL) e [nlohmann/json](https://github.com/nlohmann/json). Também é necessário utilizar alguma distribuição Linux como sistema operacional e ter o programa [make](https://www.gnu.org/software/make/) instalado para compilar o código.
 ## Build
 
 Para compilar o projeto, basta utilizar o comando **make** na raíz do projeto.
