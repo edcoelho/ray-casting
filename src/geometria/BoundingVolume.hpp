@@ -20,7 +20,7 @@ class BoundingVolume {
         double ajuste_volume;
 
     public:
-        BoundingVolume (double _ajuste_volume = 1.15);
+        BoundingVolume (double _ajuste_volume = 0.0);
 
         Ponto3 get_ponto_minimo () const;
 
@@ -35,6 +35,9 @@ class BoundingVolume {
         void inserir (const std::shared_ptr<BoundingVolume>& sub_grupo);
 
         hit_info calcula_interseccao (Raio& raio);
+
+        // Retorna se um dado Ponto3 está contido dentro do volume.
+        bool ponto_dentro (const Ponto3& ponto) const;
 
 };
 

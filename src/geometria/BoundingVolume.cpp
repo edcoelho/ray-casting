@@ -55,17 +55,21 @@ void BoundingVolume::inserir (const Ponto3 & ponto) {
 
     if (estrutura_mudou) {
 
-        double
-            altura = this->ponto_maximo[1] - this->ponto_minimo[1],
-            altura_ajustada = altura * this->ajuste_volume;
+        double altura = this->ponto_maximo[1] - this->ponto_minimo[1];
+        Vetor3 vetor_ajuste(0.0, this->ajuste_volume * altura, 0.0);
 
-        this->volume.set_raio((std::max(this->ponto_maximo[0] - this->ponto_minimo[0], this->ponto_maximo[2] - this->ponto_minimo[2] )/2.0)*this->ajuste_volume);
-        this->volume.set_altura(altura_ajustada, false);
+        this->ponto_minimo = this->ponto_minimo - vetor_ajuste;
+        this->ponto_maximo = this->ponto_maximo + vetor_ajuste;
+
+        altura = this->ponto_maximo[1] - this->ponto_minimo[1];
+
         this->volume.set_centro_base(Ponto3(
             (this->ponto_maximo[0] + this->ponto_minimo[0])/2.0,
-            (this->ponto_minimo - (this->volume.get_direcao() * ((altura_ajustada - altura)/2.0)))[1],
+            this->ponto_minimo[1],
             (this->ponto_maximo[2] + this->ponto_minimo[2])/2.0
         ), false);
+        this->volume.set_altura(altura, false);
+        this->volume.set_raio((this->ponto_minimo - this->volume.get_centro_base()).norma());
         this->volume.set_centro_topo(this->volume.get_centro_base() + (this->volume.get_direcao() * this->volume.get_altura()), false);
 
     }
@@ -104,8 +108,9 @@ hit_info BoundingVolume::calcula_interseccao (Raio& raio) {
 
     hit_info resultado;
     double distancia = -1.0, min_distancia = INFINITY;
+    bool intersectou_volume = this->ponto_dentro(raio.get_ponto_inicial()) || this->volume.escalar_interseccao(raio) > -1.0;
 
-    if (this->volume.escalar_interseccao(raio) > -1.0) {
+    if (intersectou_volume) {
 
         for (std::size_t i = 0; i < this->solidos.size(); i++) {
 
@@ -147,5 +152,20 @@ hit_info BoundingVolume::calcula_interseccao (Raio& raio) {
     }
 
     return resultado;
+
+}
+
+bool BoundingVolume::ponto_dentro (const Ponto3& ponto) const {
+
+    Vetor3 v, p_v, h;
+    double v_escalar_dc, r;
+    // double erro = 1.0e-12;
+
+    v = ponto - this->volume.get_centro_base();
+    v_escalar_dc = v.escalar(this->volume.get_direcao());
+    p_v = this->volume.get_direcao() * v_escalar_dc;
+    r = (v - p_v).norma();
+
+    return r <= this->volume.get_raio() && 0.0 < v_escalar_dc && v_escalar_dc < this->volume.get_altura();
 
 }

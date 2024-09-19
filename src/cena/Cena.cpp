@@ -271,6 +271,24 @@ hit_info Cena::retorna_interseccao(Raio& raio, rgb cor_padrao) {
 
                     }
 
+                    indice = 0;
+
+                    // Checando se o raio de luz intersectou alguma dos bounding volumes antes.
+                    while (!raio_luz_obstruido && indice < this->bounding_volumes.size()) {
+
+                        t_int_obstrucao = this->bounding_volumes.at(indice)->calcula_interseccao(raio_luz).distancia;
+
+                        if (this->fontes_luz.at(i)->distancia_ponto_luz(p_int) >= t_int_obstrucao && t_int_obstrucao >= 1e-12) {
+
+                            raio_luz_obstruido = true;
+
+                        }
+
+                        indice++;
+
+                    }
+
+
                     // Checando se o raio da fonte de luz não intersecta nenhum outro objeto, o que bloquearia a chegada da luz no ponto de intersecção.
                     if (!raio_luz_obstruido) {
 
