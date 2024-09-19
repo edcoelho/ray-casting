@@ -325,7 +325,9 @@
 
             },
 
-            "malhas": []
+            "malhas": [],
+
+            "bounding_volumes": []
 
         }
 

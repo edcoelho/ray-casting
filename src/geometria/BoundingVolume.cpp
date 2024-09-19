@@ -100,13 +100,16 @@ void BoundingVolume::inserir (const std::shared_ptr<Malha>& malha) {
 
 void BoundingVolume::inserir (const std::shared_ptr<BoundingVolume>& sub_grupo) {
 
+    this->inserir(sub_grupo->get_ponto_minimo());
+    this->inserir(sub_grupo->get_ponto_maximo());
+
     this->sub_grupos.push_back(std::move(sub_grupo));
 
 }
 
 hit_info BoundingVolume::calcula_interseccao (Raio& raio) {
 
-    hit_info resultado;
+    hit_info resultado, resultado_sub_grupo;
     double distancia = -1.0, min_distancia = INFINITY;
     bool intersectou_volume = this->ponto_dentro(raio.get_ponto_inicial()) || this->volume.escalar_interseccao(raio) > -1.0;
 
@@ -138,6 +141,22 @@ hit_info BoundingVolume::calcula_interseccao (Raio& raio) {
                 resultado.solido = std::make_shared<Triangulo>(this->malhas[i]->get_ultima_face_intersectada());
                 resultado.malha = this->malhas[i];
                 resultado.distancia = distancia;
+
+            }
+
+        }
+
+        for (std::size_t i = 0; i < this->sub_grupos.size(); i++) {
+
+            resultado_sub_grupo = this->sub_grupos[i]->calcula_interseccao(raio);
+
+            if (resultado_sub_grupo.distancia >= 0.0 && resultado_sub_grupo.distancia < min_distancia) {
+
+                min_distancia = resultado_sub_grupo.distancia;
+                resultado.intersectou = true;
+                resultado.solido = resultado_sub_grupo.solido;
+                resultado.malha = resultado_sub_grupo.malha;
+                resultado.distancia = resultado_sub_grupo.distancia;
 
             }
 

@@ -14,6 +14,9 @@ std::vector<std::shared_ptr<Solido>> carregar_solidos_json (json dados);
 // Retorna as malhas recuperadas de um arquivo JSON já lido.
 std::vector<std::shared_ptr<Malha>> carregar_malhas_json (json dados);
 
+// Retorna os bounding volumes recuperados de um arquivo JSON já lido.
+std::vector<std::shared_ptr<BoundingVolume>> carregar_bv_json (json dados);
+
 // Função para carregar para uma cena uma malha descrita em um arquivo JSON.
 std::shared_ptr<Malha> carregar_malha_json(std::string nome_arquivo_JSON_malha);
 
@@ -520,39 +523,11 @@ void preparar_cena(Cena& cena) {
 
     if (!dados["bounding_volumes"].empty()) {
 
-        std::vector<std::shared_ptr<Solido>> solidos_bv;
-        std::vector<std::shared_ptr<Malha>> malhas_bv;
-        std::shared_ptr<BoundingVolume> bounding_volume;
+        std::vector<std::shared_ptr<BoundingVolume>> bounding_volumes = carregar_bv_json(dados);
 
-        for (std::size_t i = 0; i < dados["bounding_volumes"].size(); i++) {
+        for (std::size_t i = 0; i < bounding_volumes.size(); i++) {
 
-            solidos_bv = carregar_solidos_json(dados["bounding_volumes"][i]);
-            malhas_bv = carregar_malhas_json(dados["bounding_volumes"][i]);
-            bounding_volume = std::make_shared<BoundingVolume>();
-
-            if (!dados["bounding_volumes"][i]["ajuste_volume"].empty()) {
-
-                bounding_volume->set_ajuste_volume(dados["bounding_volumes"][i]["ajuste_volume"]);
-
-            }
-
-            for (std::size_t j = 0; j < solidos_bv.size(); j++) {
-
-                bounding_volume->inserir(solidos_bv[j]);
-
-            }
-
-            for (std::size_t j = 0; j < malhas_bv.size(); j++) {
-
-                bounding_volume->inserir(malhas_bv[j]);
-
-            }
-
-            if (solidos_bv.size() > 0 || malhas_bv.size() > 0) {
-
-                cena.inserir_bounding_volume(bounding_volume);
-
-            }
+            cena.inserir_bounding_volume(bounding_volumes.at(i));
 
         }
 
@@ -1387,6 +1362,62 @@ std::vector<std::shared_ptr<Malha>> carregar_malhas_json (json dados) {
     }
 
     return malhas;
+
+}
+
+std::vector<std::shared_ptr<BoundingVolume>> carregar_bv_json (json dados) {
+
+    std::vector<std::shared_ptr<BoundingVolume>> bounding_volumes;
+
+    if (!dados["bounding_volumes"].empty()) {
+
+        std::vector<std::shared_ptr<Solido>> solidos_bv;
+        std::vector<std::shared_ptr<Malha>> malhas_bv;
+        std::vector<std::shared_ptr<BoundingVolume>> bounding_volumes_bv;
+        std::shared_ptr<BoundingVolume> bounding_volume;
+
+        for (std::size_t i = 0; i < dados["bounding_volumes"].size(); i++) {
+
+            solidos_bv = carregar_solidos_json(dados["bounding_volumes"][i]);
+            malhas_bv = carregar_malhas_json(dados["bounding_volumes"][i]);
+            bounding_volumes_bv = carregar_bv_json(dados["bounding_volumes"][i]);
+            bounding_volume = std::make_shared<BoundingVolume>();
+
+            if (!dados["bounding_volumes"][i]["ajuste_volume"].empty()) {
+
+                bounding_volume->set_ajuste_volume(dados["bounding_volumes"][i]["ajuste_volume"]);
+
+            }
+
+            for (std::size_t j = 0; j < solidos_bv.size(); j++) {
+
+                bounding_volume->inserir(solidos_bv[j]);
+
+            }
+
+            for (std::size_t j = 0; j < malhas_bv.size(); j++) {
+
+                bounding_volume->inserir(malhas_bv[j]);
+
+            }
+
+            for (std::size_t j = 0; j < bounding_volumes_bv.size(); j++) {
+
+                bounding_volume->inserir(bounding_volumes_bv[j]);
+
+            }
+
+            if (solidos_bv.size() > 0 || malhas_bv.size() > 0 || bounding_volumes_bv.size() > 0) {
+
+                bounding_volumes.push_back(bounding_volume);
+
+            }
+
+        }
+
+    }
+
+    return bounding_volumes;
 
 }
 

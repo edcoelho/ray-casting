@@ -253,16 +253,6 @@
                 },
         
                 {
-                    "tipo": "piramide",
-                    "centro_base": [250.0, 100.0, 250.0],
-                    "largura_base": 170.0,
-                    "comprimento_base": 120.0,
-                    "altura": 70.0,
-                    "material": "telhado"
-        
-                },
-        
-                {
                     "tipo": "retangulo",
                     "plano": "xy",
                     "centro_base": [250.0, 0.0, 199.0],
@@ -367,29 +357,58 @@
                         }
         
                     ]
-                },
-        
+                }
+
+            ],
+
+            "bounding_volumes": [
+
                 {
-                    "tipo": "paralelepipedo",
-                    "centro_base": [137.5, 0.0, 250.0],
-                    "largura_base": 75.0,
-                    "comprimento_base": 100.0,
-                    "altura": 10.0,
-                    "material": "madeira",
-        
-                    "transformacoes": [
-                        
+
+                    "malhas": [
+
                         {
-        
-                            "tipo": "cisalhamento",
-                            "angulo": 1.0471975512,
-                            "eixo1": "z",
-                            "eixo2": "x",
-                            "ponto_amarra": [137.5, 0.0, 250.0]
-        
+                            "tipo": "piramide",
+                            "centro_base": [250.0, 100.0, 250.0],
+                            "largura_base": 170.0,
+                            "comprimento_base": 120.0,
+                            "altura": 70.0,
+                            "material": "telhado"
                         }
-                        
+
                     ]
+
+                },
+
+                {
+
+                    "malhas": [
+
+                        {
+                            "tipo": "paralelepipedo",
+                            "centro_base": [137.5, 0.0, 250.0],
+                            "largura_base": 75.0,
+                            "comprimento_base": 100.0,
+                            "altura": 10.0,
+                            "material": "madeira",
+                
+                            "transformacoes": [
+                                
+                                {
+                
+                                    "tipo": "cisalhamento",
+                                    "angulo": 1.0471975512,
+                                    "eixo1": "z",
+                                    "eixo2": "x",
+                                    "ponto_amarra": [137.5, 0.0, 250.0]
+                
+                                }
+                                
+                            ]
+                        }
+
+                    ]
+
                 }
 
             ]
