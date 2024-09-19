@@ -140,173 +140,6 @@
 
     },
 
-    "malhas": [
-
-        {
-            "tipo": "paralelepipedo",
-            "centro_base": [250.0, 0.0, 250.0],
-            "largura_base": 75.0,
-            "comprimento_base": 50.0,
-            "altura": 50.0,
-            "material": "parede",
-
-            "transformacoes": [
-
-                {
-
-                    "tipo": "escala",
-                    "fator_x": 2.0,
-                    "fator_y": 2.0,
-                    "fator_z": 2.0,
-                    "ponto_amarra": [250.0, 0.0, 250.0]
-
-                }
-
-            ]
-        },
-
-        {
-            "tipo": "piramide",
-            "centro_base": [250.0, 100.0, 250.0],
-            "largura_base": 170.0,
-            "comprimento_base": 120.0,
-            "altura": 70.0,
-            "material": "telhado"
-
-        },
-
-        {
-            "tipo": "retangulo",
-            "plano": "xy",
-            "centro_base": [250.0, 0.0, 199.0],
-            "largura": 24.0,
-            "altura": 50.0,
-            "material": "porta",
-            "normal_sentido_positivo": false
-        },
-
-        {
-            
-            "tipo": "retangulo",
-            "plano": "xz",
-            "centro_base": [0.0, 0.0, -18.0],
-            "largura": 24.0,
-            "altura": 18.0,
-            "material": "tapete",
-            "normal_sentido_positivo": true,
-
-            "transformacoes": [
-
-                {
-
-                    "tipo": "rotacao",
-                    "angulo": 3.14159265359,
-                    "eixo": "y"
-
-                },
-
-                {
-
-                    "tipo": "translacao",
-                    "x": 250.0,
-                    "y": 1.0,
-                    "z": 176.0
-
-                }
-
-            ]
-
-        },
-
-        {
-            "tipo": "retangulo",
-            "plano": "xy",
-            "centro_base": [292.0, 25.0, 199.0],
-            "largura": 20.0,
-            "altura": 20.0,
-            "material": "janela",
-            "normal_sentido_positivo": false,
-
-            "transformacoes": [
-
-                {
-                    "tipo": "rotacao_arbitraria",
-                    "angulo": 0.78539816339,
-                    "ponto_eixo": [292.0, 25.0, 199.0],
-                    "direcao_eixo": [0.0, 0.0, -1.0]
-                },
-
-                {
-                    "tipo": "translacao",
-                    "x": 0.0,
-                    "y": 15.0,
-                    "z": 0.0
-                }
-
-            ]
-        },
-
-        {
-            "tipo": "retangulo",
-            "plano": "xy",
-            "centro_base": [292.0, 25.0, 199.0],
-            "largura": 20.0,
-            "altura": 20.0,
-            "material": "janela",
-            "normal_sentido_positivo": false,
-
-            "transformacoes": [
-
-                {
-                    "tipo": "rotacao_arbitraria",
-                    "angulo": 0.78539816339,
-                    "ponto_eixo": [292.0, 25.0, 199.0],
-                    "direcao_eixo": [0.0, 0.0, -1.0]
-                },
-
-                {
-                    "tipo": "translacao",
-                    "x": 0.0,
-                    "y": 15.0,
-                    "z": 0.0
-                },
-
-                {
-
-                    "tipo": "reflexao_arbitraria",
-                    "vetor_normal_plano": [1.0, 0.0, 0.0],
-                    "ponto_plano": [250.0, 0.0, 250.0]
-
-                }
-
-            ]
-        },
-
-        {
-            "tipo": "paralelepipedo",
-            "centro_base": [137.5, 0.0, 250.0],
-            "largura_base": 75.0,
-            "comprimento_base": 100.0,
-            "altura": 10.0,
-            "material": "madeira",
-
-            "transformacoes": [
-                
-                {
-
-                    "tipo": "cisalhamento",
-                    "angulo": 1.0471975512,
-                    "eixo1": "z",
-                    "eixo2": "x",
-                    "ponto_amarra": [137.5, 0.0, 250.0]
-
-                }
-                
-            ]
-        }
-
-    ],
-
     "solidos": {
 
         "planos": [
@@ -324,6 +157,8 @@
     "bounding_volumes": [
 
         {
+
+            "ajuste_volume": 1.15,
 
             "solidos": {
 
@@ -389,6 +224,177 @@
 
                 ]
             }
+
+        },
+
+        {
+
+            "malhas": [
+
+                {
+                    "tipo": "paralelepipedo",
+                    "centro_base": [250.0, 0.0, 250.0],
+                    "largura_base": 75.0,
+                    "comprimento_base": 50.0,
+                    "altura": 50.0,
+                    "material": "parede",
+        
+                    "transformacoes": [
+        
+                        {
+        
+                            "tipo": "escala",
+                            "fator_x": 2.0,
+                            "fator_y": 2.0,
+                            "fator_z": 2.0,
+                            "ponto_amarra": [250.0, 0.0, 250.0]
+        
+                        }
+        
+                    ]
+                },
+        
+                {
+                    "tipo": "piramide",
+                    "centro_base": [250.0, 100.0, 250.0],
+                    "largura_base": 170.0,
+                    "comprimento_base": 120.0,
+                    "altura": 70.0,
+                    "material": "telhado"
+        
+                },
+        
+                {
+                    "tipo": "retangulo",
+                    "plano": "xy",
+                    "centro_base": [250.0, 0.0, 199.0],
+                    "largura": 24.0,
+                    "altura": 50.0,
+                    "material": "porta",
+                    "normal_sentido_positivo": false
+                },
+        
+                {
+                    
+                    "tipo": "retangulo",
+                    "plano": "xz",
+                    "centro_base": [0.0, 0.0, -18.0],
+                    "largura": 24.0,
+                    "altura": 18.0,
+                    "material": "tapete",
+                    "normal_sentido_positivo": true,
+        
+                    "transformacoes": [
+        
+                        {
+        
+                            "tipo": "rotacao",
+                            "angulo": 3.14159265359,
+                            "eixo": "y"
+        
+                        },
+        
+                        {
+        
+                            "tipo": "translacao",
+                            "x": 250.0,
+                            "y": 1.0,
+                            "z": 176.0
+        
+                        }
+        
+                    ]
+        
+                },
+        
+                {
+                    "tipo": "retangulo",
+                    "plano": "xy",
+                    "centro_base": [292.0, 25.0, 199.0],
+                    "largura": 20.0,
+                    "altura": 20.0,
+                    "material": "janela",
+                    "normal_sentido_positivo": false,
+        
+                    "transformacoes": [
+        
+                        {
+                            "tipo": "rotacao_arbitraria",
+                            "angulo": 0.78539816339,
+                            "ponto_eixo": [292.0, 25.0, 199.0],
+                            "direcao_eixo": [0.0, 0.0, -1.0]
+                        },
+        
+                        {
+                            "tipo": "translacao",
+                            "x": 0.0,
+                            "y": 15.0,
+                            "z": 0.0
+                        }
+        
+                    ]
+                },
+        
+                {
+                    "tipo": "retangulo",
+                    "plano": "xy",
+                    "centro_base": [292.0, 25.0, 199.0],
+                    "largura": 20.0,
+                    "altura": 20.0,
+                    "material": "janela",
+                    "normal_sentido_positivo": false,
+        
+                    "transformacoes": [
+        
+                        {
+                            "tipo": "rotacao_arbitraria",
+                            "angulo": 0.78539816339,
+                            "ponto_eixo": [292.0, 25.0, 199.0],
+                            "direcao_eixo": [0.0, 0.0, -1.0]
+                        },
+        
+                        {
+                            "tipo": "translacao",
+                            "x": 0.0,
+                            "y": 15.0,
+                            "z": 0.0
+                        },
+        
+                        {
+        
+                            "tipo": "reflexao_arbitraria",
+                            "vetor_normal_plano": [1.0, 0.0, 0.0],
+                            "ponto_plano": [250.0, 0.0, 250.0]
+        
+                        }
+        
+                    ]
+                },
+        
+                {
+                    "tipo": "paralelepipedo",
+                    "centro_base": [137.5, 0.0, 250.0],
+                    "largura_base": 75.0,
+                    "comprimento_base": 100.0,
+                    "altura": 10.0,
+                    "material": "madeira",
+        
+                    "transformacoes": [
+                        
+                        {
+        
+                            "tipo": "cisalhamento",
+                            "angulo": 1.0471975512,
+                            "eixo1": "z",
+                            "eixo2": "x",
+                            "ponto_amarra": [137.5, 0.0, 250.0]
+        
+                        }
+                        
+                    ]
+                }
+
+            ]
 
         }
 

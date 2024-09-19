@@ -3,27 +3,38 @@
 using json = nlohmann::json;
 
 // Função para preparar o canvas de acordo com um arquivo JSON.
-void preparar_canvas(Canvas& canvas, std::string nome_arquivo_JSON);
+void preparar_canvas(Canvas& canvas);
 
 // Função para preparar uma cena descrita em um arquivo JSON.
-void preparar_cena(Cena& cena, std::string nome_arquivo_JSON);
+void preparar_cena(Cena& cena);
 
-// Retorna os sólidos recuperados do arquivo JSON.
-std::vector<std::shared_ptr<Solido>> solidos_JSON (json dados, std::string nome_arquivo_JSON, std::vector<Material> materiais);
+// Retorna os sólidos recuperados de arquivo JSON já lido.
+std::vector<std::shared_ptr<Solido>> carregar_solidos_json (json dados);
+
+// Retorna as malhas recuperadas de um arquivo JSON já lido.
+std::vector<std::shared_ptr<Malha>> carregar_malhas_json (json dados);
 
 // Função para carregar para uma cena uma malha descrita em um arquivo JSON.
-std::shared_ptr<Malha> carregar_malha(std::string nome_arquivo_JSON);
+std::shared_ptr<Malha> carregar_malha_json(std::string nome_arquivo_JSON_malha);
+
+std::string
+    nome_arquivo_JSON_cena,
+    nome_arquivo_JSON_canvas = "canvas.json";
+
+std::vector<std::shared_ptr<Textura>> texturas;
+std::vector<Material> materiais;
 
 int main(int argc, char* argv[]) {
 
     Canvas canvas(0, 0);
     Cena cena;
 
-    preparar_canvas(canvas, "canvas.json");
+    preparar_canvas(canvas);
 
     if (argc > 1) {
 
-        preparar_cena(cena, argv[1]);
+        nome_arquivo_JSON_cena = std::string(argv[1]);
+        preparar_cena(cena);
 
     }
 
@@ -32,13 +43,13 @@ int main(int argc, char* argv[]) {
 
 }
 
-void preparar_canvas(Canvas& canvas, std::string nome_arquivo_JSON) {
+void preparar_canvas(Canvas& canvas) {
 
     // Cor de background do canvas.
     rgb cor_bg{0, 0, 0};
 
     // Abrindo conexão com o arquivo.
-    std::ifstream arquivo_JSON(nome_arquivo_JSON);
+    std::ifstream arquivo_JSON(nome_arquivo_JSON_canvas);
 
     // Checando se o arquivo abriu com sucesso.
     if (!arquivo_JSON.is_open()) {
@@ -55,13 +66,13 @@ void preparar_canvas(Canvas& canvas, std::string nome_arquivo_JSON) {
 
     if (dados["largura"].empty()) {
 
-        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": Largura do canvas não especificado!"));
+        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_canvas + ": Largura do canvas não especificado!"));
 
     }
 
     if (dados["altura"].empty()) {
 
-        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": Altura do canvas não especificado!"));
+        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_canvas + ": Altura do canvas não especificado!"));
 
     }
 
@@ -78,18 +89,15 @@ void preparar_canvas(Canvas& canvas, std::string nome_arquivo_JSON) {
 
 }
 
-void preparar_cena(Cena& cena, std::string nome_arquivo_JSON) {
-
-    std::vector<std::shared_ptr<Textura>> texturas;
-    std::vector<Material> materiais;
+void preparar_cena(Cena& cena) {
 
     // Abrindo conexão com o arquivo.
-    std::ifstream arquivo_JSON(nome_arquivo_JSON);
+    std::ifstream arquivo_JSON(nome_arquivo_JSON_cena);
 
     // Checando se o arquivo abriu com sucesso.
     if (!arquivo_JSON.is_open()) {
 
-        throw std::runtime_error(std::string("Erro: Não foi possível carregar as informações da cena \"") + nome_arquivo_JSON + "\"");
+        throw std::runtime_error(std::string("Erro: Não foi possível carregar as informações da cena \"") + nome_arquivo_JSON_cena + "\"");
 
     }
 
@@ -110,7 +118,7 @@ void preparar_cena(Cena& cena, std::string nome_arquivo_JSON) {
 
         } else {
 
-            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": Posição da câmera não especificada."));
+            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": Posição da câmera não especificada."));
 
         }
 
@@ -121,7 +129,7 @@ void preparar_cena(Cena& cena, std::string nome_arquivo_JSON) {
 
         } else {
 
-            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": LookAt da câmera não especificado."));
+            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": LookAt da câmera não especificado."));
 
         }
 
@@ -132,7 +140,7 @@ void preparar_cena(Cena& cena, std::string nome_arquivo_JSON) {
 
         } else {
 
-            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": ViewUp da câmera não especificado."));
+            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": ViewUp da câmera não especificado."));
 
         }
 
@@ -143,7 +151,7 @@ void preparar_cena(Cena& cena, std::string nome_arquivo_JSON) {
 
         } else {
 
-            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": X máximo da câmera não especificado."));
+            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": X máximo da câmera não especificado."));
 
         }
 
@@ -154,7 +162,7 @@ void preparar_cena(Cena& cena, std::string nome_arquivo_JSON) {
 
         } else {
 
-            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": X mínimo da câmera não especificado."));
+            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": X mínimo da câmera não especificado."));
 
         }
 
@@ -165,7 +173,7 @@ void preparar_cena(Cena& cena, std::string nome_arquivo_JSON) {
 
         } else {
 
-            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": Y máximo da câmera não especificado."));
+            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": Y máximo da câmera não especificado."));
 
         }
 
@@ -176,7 +184,7 @@ void preparar_cena(Cena& cena, std::string nome_arquivo_JSON) {
 
         } else {
 
-            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": Y mínimo da câmera não especificado."));
+            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": Y mínimo da câmera não especificado."));
 
         }
 
@@ -187,13 +195,13 @@ void preparar_cena(Cena& cena, std::string nome_arquivo_JSON) {
 
         } else {
 
-            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": Distância focal da câmera não especificada."));
+            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": Distância focal da câmera não especificada."));
 
         }
 
     } else {
 
-        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": Dados da câmera não especificados."));
+        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": Dados da câmera não especificados."));
 
     }
 
@@ -209,13 +217,13 @@ void preparar_cena(Cena& cena, std::string nome_arquivo_JSON) {
 
             if (dados["texturas"][i]["nome"].empty()) {
 
-                throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O nome da " + std::to_string(i+1) + "ª textura carregada não foi especificado."));
+                throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O nome da " + std::to_string(i+1) + "ª textura carregada não foi especificado."));
 
             }
 
             if (dados["texturas"][i]["arquivo"].empty()) {
 
-                throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O arquivo de imagem da " + std::to_string(i+1) + "ª textura carregada não foi especificado."));
+                throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O arquivo de imagem da " + std::to_string(i+1) + "ª textura carregada não foi especificado."));
 
             }
 
@@ -237,7 +245,7 @@ void preparar_cena(Cena& cena, std::string nome_arquivo_JSON) {
 
             if (dados["materiais"][i]["nome"].empty()) {
 
-                throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O nome do " + std::to_string(i+1) + "º material criado não foi especificado."));
+                throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O nome do " + std::to_string(i+1) + "º material criado não foi especificado."));
 
             }
 
@@ -246,25 +254,25 @@ void preparar_cena(Cena& cena, std::string nome_arquivo_JSON) {
 
                 if (dados["materiais"][i]["k_ambiente"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A componente k_ambiente do " + std::to_string(i+1) + "º material criado não foi especificado."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A componente k_ambiente do " + std::to_string(i+1) + "º material criado não foi especificado."));
 
                 }
 
                 if (dados["materiais"][i]["k_difusa"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A componente k_difusa do " + std::to_string(i+1) + "º material criado não foi especificado."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A componente k_difusa do " + std::to_string(i+1) + "º material criado não foi especificado."));
 
                 }
 
                 if (dados["materiais"][i]["k_especular"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A componente k_especular do " + std::to_string(i+1) + "º material criado não foi especificado."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A componente k_especular do " + std::to_string(i+1) + "º material criado não foi especificado."));
 
                 }
 
                 if (dados["materiais"][i]["exp_especularidade"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O expoente de especularidade do " + std::to_string(i+1) + "º material criado não foi especificado."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O expoente de especularidade do " + std::to_string(i+1) + "º material criado não foi especificado."));
 
                 }
 
@@ -294,13 +302,13 @@ void preparar_cena(Cena& cena, std::string nome_arquivo_JSON) {
 
                     } else {
 
-                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A textura do " + std::to_string(i+1) + "º material criado não foi carregada."));
+                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A textura do " + std::to_string(i+1) + "º material criado não foi carregada."));
 
                     }
 
                 } else {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O " + std::to_string(i+1) + "º material especifica uma textura, porém nenhuma textura foi carregada."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O " + std::to_string(i+1) + "º material especifica uma textura, porém nenhuma textura foi carregada."));
 
                 }
 
@@ -332,13 +340,13 @@ void preparar_cena(Cena& cena, std::string nome_arquivo_JSON) {
 
                 if (dados["luzes"]["pontuais"][i]["posicao"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A posição da " + std::to_string(i+1) + "ª luz pontual criada não foi especificada."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A posição da " + std::to_string(i+1) + "ª luz pontual criada não foi especificada."));
 
                 }
 
                 if (dados["luzes"]["pontuais"][i]["intensidade"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A intensidade da " + std::to_string(i+1) + "ª luz pontual criada não foi especificada."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A intensidade da " + std::to_string(i+1) + "ª luz pontual criada não foi especificada."));
 
                 }
 
@@ -382,25 +390,25 @@ void preparar_cena(Cena& cena, std::string nome_arquivo_JSON) {
 
                 if (dados["luzes"]["spots"][i]["direcao"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A direção da " + std::to_string(i+1) + "ª luz spot criada não foi especificada."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A direção da " + std::to_string(i+1) + "ª luz spot criada não foi especificada."));
 
                 }
 
                 if (dados["luzes"]["spots"][i]["abertura"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O ângulo de abertura da " + std::to_string(i+1) + "ª luz spot criada não foi especificado."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O ângulo de abertura da " + std::to_string(i+1) + "ª luz spot criada não foi especificado."));
 
                 }
 
                 if (dados["luzes"]["spots"][i]["posicao"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A posição da " + std::to_string(i+1) + "ª luz spot criada não foi especificada."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A posição da " + std::to_string(i+1) + "ª luz spot criada não foi especificada."));
 
                 }
 
                 if (dados["luzes"]["spots"][i]["intensidade"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A intensidade da " + std::to_string(i+1) + "ª luz spot criada não foi especificada."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A intensidade da " + std::to_string(i+1) + "ª luz spot criada não foi especificada."));
 
                 }
 
@@ -448,13 +456,13 @@ void preparar_cena(Cena& cena, std::string nome_arquivo_JSON) {
 
                 if (dados["luzes"]["direcionais"][i]["direcao"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A direção da " + std::to_string(i+1) + "ª luz direcional criada não foi especificada."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A direção da " + std::to_string(i+1) + "ª luz direcional criada não foi especificada."));
 
                 }
 
                 if (dados["luzes"]["direcionais"][i]["intensidade"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A intensidade da " + std::to_string(i+1) + "ª luz direcional criada não foi especificada."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A intensidade da " + std::to_string(i+1) + "ª luz direcional criada não foi especificada."));
 
                 }
 
@@ -480,13 +488,7 @@ void preparar_cena(Cena& cena, std::string nome_arquivo_JSON) {
 
     if (!dados["solidos"].empty()) {
 
-        if (materiais.size() == 0) {
-
-            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": Não foi especificado nenhum material, portanto não há como inserir sólidos."));
-
-        }
-
-        std::vector<std::shared_ptr<Solido>> solidos = solidos_JSON(dados, nome_arquivo_JSON, materiais);
+        std::vector<std::shared_ptr<Solido>> solidos = carregar_solidos_json(dados);
 
         for (std::size_t i = 0; i < solidos.size(); i++) {
 
@@ -502,492 +504,11 @@ void preparar_cena(Cena& cena, std::string nome_arquivo_JSON) {
 
     if (!dados["malhas"].empty()) {
 
-        if (materiais.size() == 0) {
+        std::vector<std::shared_ptr<Malha>> malhas = carregar_malhas_json(dados);
 
-            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": Não foi especificado nenhum material, portanto não há como inserir malhas."));
+        for (std::size_t i = 0; i < malhas.size(); i++) {
 
-        }
-
-        for (std::size_t i = 0; i < dados["malhas"].size(); i++) {
-
-            if (dados["malhas"][i]["arquivo"].empty() && dados["malhas"][i]["tipo"].empty()) {
-
-                throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": Não foi especificado um arquivo ou um tipo para a " + std::to_string(i+1) + "ª malha criada."));
-
-            }
-
-            if (dados["malhas"][i]["material"].empty()) {
-
-                throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material da " + std::to_string(i+1) + "ª malha criada não foi especificado."));
-
-            }
-
-            std::shared_ptr<Malha> malha;
-
-            // Checando se é uma malha pré-definida
-            if (!dados["malhas"][i]["tipo"].empty()) {
-
-                if (dados["malhas"][i]["tipo"] == "retangulo") {
-
-                    if (dados["malhas"][i]["plano"].empty()) {
-
-                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O plano da " + std::to_string(i+1) + "ª malha criada (retângulo) não foi especificado."));
-
-                    }
-
-                    if (dados["malhas"][i]["centro_base"].empty()) {
-
-                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O centro da base da " + std::to_string(i+1) + "ª malha criada (retângulo) não foi especificado."));
-
-                    }
-
-                    if (dados["malhas"][i]["largura"].empty()) {
-
-                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A largura da " + std::to_string(i+1) + "ª malha criada (retângulo) não foi especificado."));
-
-                    }
-
-                    if (dados["malhas"][i]["altura"].empty()) {
-
-                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A altura da " + std::to_string(i+1) + "ª malha criada (retângulo) não foi especificado."));
-
-                    }
-
-                    if (dados["malhas"][i]["normal_sentido_positivo"].empty()) {
-
-                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O booleano que indica se o vetor normal à " + std::to_string(i+1) + "ª malha criada (retângulo) aponta para o positivo não foi especificado."));
-
-                    }
-
-                    Ponto3 centro_base;
-
-                    for (std::size_t k = 0; k < 3; k++)
-                        centro_base[k] = dados["malhas"][i]["centro_base"][k];
-
-                    if (dados["malhas"][i]["plano"] == "xy") {
-                        
-                        malha = std::make_shared<RetanguloXY>(centro_base, dados["malhas"][i]["largura"], dados["malhas"][i]["altura"], Material(), dados["malhas"][i]["normal_sentido_positivo"]);
-
-                    } else if (dados["malhas"][i]["plano"] == "xz") {
-
-                        malha = std::make_shared<RetanguloXZ>(centro_base, dados["malhas"][i]["largura"], dados["malhas"][i]["altura"], Material(), dados["malhas"][i]["normal_sentido_positivo"]);
-
-                    } else if (dados["malhas"][i]["plano"] == "yz") {
-
-                        malha = std::make_shared<RetanguloYZ>(centro_base, dados["malhas"][i]["largura"], dados["malhas"][i]["altura"], Material(), dados["malhas"][i]["normal_sentido_positivo"]);
-
-                    } else {
-
-                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O plano da " + std::to_string(i+1) + "ª malha criada (retângulo) é inválido. Valores válidos: \"xy\", \"xz\" e \"yz\""));
-                        
-                    }
-
-                } else if (dados["malhas"][i]["tipo"] == "paralelepipedo") {
-
-                    if (dados["malhas"][i]["centro_base"].empty()) {
-
-                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O centro da base da " + std::to_string(i+1) + "ª malha criada (paralelepípedo) não foi especificado."));
-
-                    }
-
-                    if (dados["malhas"][i]["largura_base"].empty()) {
-
-                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A largura da base da " + std::to_string(i+1) + "ª malha criada (paralelepípedo) não foi especificada."));
-
-                    }
-
-                    if (dados["malhas"][i]["comprimento_base"].empty()) {
-
-                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O comprimento da base da " + std::to_string(i+1) + "ª malha criada (paralelepípedo) não foi especificado."));
-
-                    }
-
-                    if (dados["malhas"][i]["altura"].empty()) {
-
-                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A altura da " + std::to_string(i+1) + "ª malha criada (paralelepípedo) não foi especificada."));
-
-                    }
-
-                    Ponto3 centro_base;
-
-                    for (std::size_t k = 0; k < 3; k++)
-                        centro_base[k] = dados["malhas"][i]["centro_base"][k];
-
-                    malha = std::make_shared<Paralelepipedo>(centro_base, dados["malhas"][i]["largura_base"], dados["malhas"][i]["comprimento_base"], dados["malhas"][i]["altura"]);
-
-                } else if (dados["malhas"][i]["tipo"] == "piramide") {
-
-                    if (dados["malhas"][i]["centro_base"].empty()) {
-
-                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O centro da base da " + std::to_string(i+1) + "ª malha criada (pirâmide) não foi especificado."));
-
-                    }
-
-                    if (dados["malhas"][i]["largura_base"].empty()) {
-
-                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A largura da base da " + std::to_string(i+1) + "ª malha criada (pirâmide) não foi especificada."));
-
-                    }
-
-                    if (dados["malhas"][i]["comprimento_base"].empty()) {
-
-                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O comprimento da base da " + std::to_string(i+1) + "ª malha criada (pirâmide) não foi especificado."));
-
-                    }
-
-                    if (dados["malhas"][i]["altura"].empty()) {
-
-                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A altura da " + std::to_string(i+1) + "ª malha criada (pirâmide) não foi especificada."));
-
-                    }
-
-                    Ponto3 centro_base;
-
-                    for (std::size_t k = 0; k < 3; k++)
-                        centro_base[k] = dados["malhas"][i]["centro_base"][k];
-
-                    malha = std::make_shared<Piramide>(centro_base, dados["malhas"][i]["largura_base"], dados["malhas"][i]["comprimento_base"], dados["malhas"][i]["altura"]);
-
-                } else {
-
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O tipo da " + std::to_string(i+1) + "ª malha criada é inválido. Valores válidos: \"retangulo\", \"paralelepipedo\" e \"piramide\"."));
-
-                }
-
-            } else {
-
-                malha = carregar_malha(dados["malhas"][i]["arquivo"]);
-
-            }
-
-            // Percorrendo o vetor de materiais para ver se o material utilizado pela malha existe.
-            std::size_t j = 0;
-            while (j < materiais.size() && materiais[j].get_nome() != dados["malhas"][i]["material"])
-                j++;
-
-            if (j < materiais.size()) {
-
-                malha->set_material(materiais[j]);
-
-            } else {
-
-                throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material da " + std::to_string(i+1) + "ª criada não existe."));
-
-            }
-
-            // Checando se tem alguma transformação para ser aplicada na malha.
-            if (!dados["malhas"][i]["transformacoes"].empty()) {
-
-                // Iterando sobre as transformações para aplicá-las nas malhas.
-                for (j = 0; j < dados["malhas"][i]["transformacoes"].size(); j++) {
-
-                    if (dados["malhas"][i]["transformacoes"][j]["tipo"].empty()) {
-
-                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O tipo da " + std::to_string(j+1) + "ª transformação aplicada na " + std::to_string(i+1) + "ª malha criada não foi especificado."));
-
-                    }
-
-                    if (dados["malhas"][i]["transformacoes"][j]["tipo"] == "translacao") {
-
-                        if (dados["malhas"][i]["transformacoes"][j]["x"].empty()) {
-
-                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A " + std::to_string(j+1) + "ª transformação (translação) aplicada na " + std::to_string(i+1) + "ª malha não especifica o valor x."));
-
-                        }
-
-                        if (dados["malhas"][i]["transformacoes"][j]["y"].empty()) {
-
-                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A " + std::to_string(j+1) + "ª transformação (translação) aplicada na " + std::to_string(i+1) + "ª malha não especifica o valor y."));
-
-                        }
-
-                        if (dados["malhas"][i]["transformacoes"][j]["z"].empty()) {
-
-                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A " + std::to_string(j+1) + "ª transformação (translação) aplicada na " + std::to_string(i+1) + "ª malha não especifica o valor z."));
-
-                        }
-
-                        // Aplicando a translação na malha.
-                        malha->transladar(dados["malhas"][i]["transformacoes"][j]["x"], dados["malhas"][i]["transformacoes"][j]["y"], dados["malhas"][i]["transformacoes"][j]["z"]);
-
-                    } else if (dados["malhas"][i]["transformacoes"][j]["tipo"] == "rotacao") {
-
-                        if (dados["malhas"][i]["transformacoes"][j]["angulo"].empty()) {
-
-                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A " + std::to_string(j+1) + "ª transformação (rotação) aplicada na " + std::to_string(i+1) + "ª malha não especifica o ângulo de rotação."));
-
-                        }
-
-                        if (dados["malhas"][i]["transformacoes"][j]["eixo"].empty()) {
-
-                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A " + std::to_string(j+1) + "ª transformação (rotação) aplicada na " + std::to_string(i+1) + "ª malha não especifica o eixo."));
-
-                        }
-
-                        EixoCanonico eixo;
-
-                        if (dados["malhas"][i]["transformacoes"][j]["eixo"] == "x") {
-
-                            eixo = EIXO_X;
-
-                        } else if (dados["malhas"][i]["transformacoes"][j]["eixo"] == "y") {
-
-                            eixo = EIXO_Y;
-
-                        } else if (dados["malhas"][i]["transformacoes"][j]["eixo"] == "z") {
-
-                            eixo = EIXO_Z;
-
-                        } else {
-
-                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A " + std::to_string(j+1) + "ª transformação (rotação) aplicada na " + std::to_string(i+1) + "ª malha especifica um eixo inválido. Os valores válidos são: \"x\", \"y\" e \"z\"."));
-
-                        }
-
-                        // Aplicando rotação na malha.
-                        malha->rotacionar(dados["malhas"][i]["transformacoes"][j]["angulo"], eixo);
-
-                    } else if (dados["malhas"][i]["transformacoes"][j]["tipo"] == "rotacao_arbitraria") {
-
-                        if (dados["malhas"][i]["transformacoes"][j]["angulo"].empty()) {
-
-                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A " + std::to_string(j+1) + "ª transformação (rotação) aplicada na " + std::to_string(i+1) + "ª malha não especifica o ângulo de rotação."));
-
-                        }
-
-                        if (dados["malhas"][i]["transformacoes"][j]["ponto_eixo"].empty()) {
-
-                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A " + std::to_string(j+1) + "ª transformação (rotação arbitrária) aplicada na " + std::to_string(i+1) + "ª malha não especifica um ponto do eixo."));
-
-                        }
-
-                        if (dados["malhas"][i]["transformacoes"][j]["direcao_eixo"].empty()) {
-
-                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A " + std::to_string(j+1) + "ª transformação (rotação arbitrária) aplicada na " + std::to_string(i+1) + "ª malha não especifica a direção do eixo."));
-
-                        }
-
-                        Ponto3 ponto_eixo(dados["malhas"][i]["transformacoes"][j]["ponto_eixo"][0], dados["malhas"][i]["transformacoes"][j]["ponto_eixo"][1], dados["malhas"][i]["transformacoes"][j]["ponto_eixo"][2]);
-
-                        Vetor3 direcao_eixo(dados["malhas"][i]["transformacoes"][j]["direcao_eixo"][0], dados["malhas"][i]["transformacoes"][j]["direcao_eixo"][1], dados["malhas"][i]["transformacoes"][j]["direcao_eixo"][2]);
-
-                        // Aplicando rotação arbitrária.
-                        
-                        malha->rotacionar(dados["malhas"][i]["transformacoes"][j]["angulo"], ponto_eixo, direcao_eixo);
-
-                    }  else if (dados["malhas"][i]["transformacoes"][j]["tipo"] == "escala") {
-
-                        if (dados["malhas"][i]["transformacoes"][j]["fator_x"].empty()) {
-
-                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A " + std::to_string(j+1) + "ª transformação (escala) aplicada na " + std::to_string(i+1) + "ª malha não especifica o fator x."));
-
-                        }
-
-                        if (dados["malhas"][i]["transformacoes"][j]["fator_y"].empty()) {
-
-                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A " + std::to_string(j+1) + "ª transformação (escala) aplicada na " + std::to_string(i+1) + "ª malha não especifica o fator y."));
-
-                        }
-
-                        if (dados["malhas"][i]["transformacoes"][j]["fator_z"].empty()) {
-
-                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A " + std::to_string(j+1) + "ª transformação (escala) aplicada na " + std::to_string(i+1) + "ª malha não especifica o fator z."));
-
-                        }
-
-                        Ponto3 ponto_amarra(0.0);
-
-                        if (!dados["malhas"][i]["transformacoes"][j]["ponto_amarra"].empty()) {
-
-                            for (std::size_t k = 0; k < 3; k++) {
-
-                                ponto_amarra[k] = dados["malhas"][i]["transformacoes"][j]["ponto_amarra"][k];
-
-                            }
-
-                        }
-
-                        // Aplicando escala.
-                        malha->escalar(dados["malhas"][i]["transformacoes"][j]["fator_x"], dados["malhas"][i]["transformacoes"][j]["fator_y"], dados["malhas"][i]["transformacoes"][j]["fator_z"], ponto_amarra);
-
-                    } else if (dados["malhas"][i]["transformacoes"][j]["tipo"] == "cisalhamento") {
-
-                        if (dados["malhas"][i]["transformacoes"][j]["angulo"].empty()) {
-
-                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A " + std::to_string(j+1) + "ª transformação (cisalhamento) aplicada na " + std::to_string(i+1) + "ª malha não especifica o ângulo de cisalhamento."));
-
-                        }
-
-                        if (dados["malhas"][i]["transformacoes"][j]["eixo1"].empty()) {
-
-                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A " + std::to_string(j+1) + "ª transformação (cisalhamento) aplicada na " + std::to_string(i+1) + "ª malha não especifica o 1º eixo."));
-
-                        }
-
-                        if (dados["malhas"][i]["transformacoes"][j]["eixo2"].empty()) {
-
-                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A " + std::to_string(j+1) + "ª transformação (cisalhamento) aplicada na " + std::to_string(i+1) + "ª malha não especifica o 2º eixo."));
-
-                        }
-
-                        EixoCanonico eixo1, eixo2;
-
-                        if (dados["malhas"][i]["transformacoes"][j]["eixo1"] == "x") {
-
-                            eixo1 = EIXO_X;
-
-                        } else if (dados["malhas"][i]["transformacoes"][j]["eixo1"] == "y") {
-
-                            eixo1 = EIXO_Y;
-
-                        } else if (dados["malhas"][i]["transformacoes"][j]["eixo1"] == "z") {
-
-                            eixo1 = EIXO_Z;
-
-                        } else {
-
-                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A " + std::to_string(j+1) + "ª transformação (cisalhamento) aplicada na " + std::to_string(i+1) + "ª malha especifica um 1º eixo inválido. Os valores válidos são: \"x\", \"y\" e \"z\"."));
-
-                        }
-
-                        if (dados["malhas"][i]["transformacoes"][j]["eixo2"] == "x") {
-
-                            eixo2 = EIXO_X;
-
-                        } else if (dados["malhas"][i]["transformacoes"][j]["eixo2"] == "y") {
-
-                            eixo2 = EIXO_Y;
-
-                        } else if (dados["malhas"][i]["transformacoes"][j]["eixo2"] == "z") {
-
-                            eixo2 = EIXO_Z;
-
-                        } else {
-
-                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A " + std::to_string(j+1) + "ª transformação (cisalhamento) aplicada na " + std::to_string(i+1) + "ª malha especifica um 2º eixo inválido. Os valores válidos são: \"x\", \"y\" e \"z\"."));
-
-                        }
-
-                        if (eixo1 == eixo2) {
-
-                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A " + std::to_string(j+1) + "ª transformação (cisalhamento) aplicada na " + std::to_string(i+1) + "ª malha especifica dois eixos iguais."));
-
-                        }
-
-                        Ponto3 ponto_amarra(0.0);
-
-                        if (!dados["malhas"][i]["transformacoes"][j]["ponto_amarra"].empty()) {
-
-                            for (std::size_t k = 0; k < 3; k++) {
-
-                                ponto_amarra[k] = dados["malhas"][i]["transformacoes"][j]["ponto_amarra"][k];
-
-                            }
-
-                        }
-
-                        // Aplicando cisalhamento.
-                        malha->cisalhar(dados["malhas"][i]["transformacoes"][j]["angulo"], eixo1, eixo2, ponto_amarra);
-
-                    } else if (dados["malhas"][i]["transformacoes"][j]["tipo"] == "reflexao") {
-
-                        if (dados["malhas"][i]["transformacoes"][j]["eixo1"].empty()) {
-
-                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A " + std::to_string(j+1) + "ª transformação (reflexão) aplicada na " + std::to_string(i+1) + "ª malha não especifica o 1º eixo."));
-
-                        }
-
-                        if (dados["malhas"][i]["transformacoes"][j]["eixo2"].empty()) {
-
-                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A " + std::to_string(j+1) + "ª transformação (reflexão) aplicada na " + std::to_string(i+1) + "ª malha não especifica o 2º eixo."));
-
-                        }
-
-                        EixoCanonico eixo1, eixo2;
-
-                        if (dados["malhas"][i]["transformacoes"][j]["eixo1"] == "x") {
-
-                            eixo1 = EIXO_X;
-
-                        } else if (dados["malhas"][i]["transformacoes"][j]["eixo1"] == "y") {
-
-                            eixo1 = EIXO_Y;
-
-                        } else if (dados["malhas"][i]["transformacoes"][j]["eixo1"] == "z") {
-
-                            eixo1 = EIXO_Z;
-
-                        } else {
-
-                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A " + std::to_string(j+1) + "ª transformação (reflexão) aplicada na " + std::to_string(i+1) + "ª malha especifica um 1º eixo inválido. Os valores válidos são: \"x\", \"y\" e \"z\"."));
-
-                        }
-
-                        if (dados["malhas"][i]["transformacoes"][j]["eixo2"] == "x") {
-
-                            eixo2 = EIXO_X;
-
-                        } else if (dados["malhas"][i]["transformacoes"][j]["eixo2"] == "y") {
-
-                            eixo2 = EIXO_Y;
-
-                        } else if (dados["malhas"][i]["transformacoes"][j]["eixo2"] == "z") {
-
-                            eixo2 = EIXO_Z;
-
-                        } else {
-
-                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A " + std::to_string(j+1) + "ª transformação (reflexão) aplicada na " + std::to_string(i+1) + "ª malha especifica um 2º eixo inválido. Os valores válidos são: \"x\", \"y\" e \"z\"."));
-
-                        }
-
-                        if (eixo1 == eixo2) {
-
-                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A " + std::to_string(j+1) + "ª transformação (reflexão) aplicada na " + std::to_string(i+1) + "ª malha especifica dois eixos iguais."));
-
-                        }
-
-                        // Aplicando a reflexão.
-                        malha->refletir(eixo1, eixo2);
-
-                    } else if (dados["malhas"][i]["transformacoes"][j]["tipo"] == "reflexao_arbitraria") {
-
-                        if (dados["malhas"][i]["transformacoes"][j]["vetor_normal_plano"].empty()) {
-
-                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A " + std::to_string(j+1) + "ª transformação (reflexão arbitrária) aplicada na " + std::to_string(i+1) + "ª malha não especifica o vetor normal ao plano."));
-
-                        }
-
-                        if (dados["malhas"][i]["transformacoes"][j]["ponto_plano"].empty()) {
-
-                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A " + std::to_string(j+1) + "ª transformação (reflexão arbitrária) aplicada na " + std::to_string(i+1) + "ª malha não especifica um ponto conhecido do plano."));
-
-                        }
-
-                        Vetor3 vetor_normal;
-                        Ponto3 ponto_plano;
-
-                        for (int k = 0; k < 3; k++) {
-
-                            vetor_normal[k] = dados["malhas"][i]["transformacoes"][j]["vetor_normal_plano"][k];
-                            ponto_plano[k] = dados["malhas"][i]["transformacoes"][j]["ponto_plano"][k];
-                            
-                        }
-
-                        // Aplicando reflexão na malha.
-                        malha->refletir(vetor_normal, ponto_plano);
-
-                    } else {
-
-                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O tipo da " + std::to_string(j+1) + "ª transformação aplicada na " + std::to_string(i+1) + "ª malha é inválido. Valores válidos: \"translacao\", \"rotacao\", \"rotacao_arbitraria\", \"escala\", \"cisalhamento\", \"reflexao\" e \"reflexao_arbitraria\"."));
-
-                    }
-
-                }
-
-            }
-
-            cena.inserir_malha(malha);
+            cena.inserir_malha(malhas.at(i));
 
         }
 
@@ -1000,20 +521,35 @@ void preparar_cena(Cena& cena, std::string nome_arquivo_JSON) {
     if (!dados["bounding_volumes"].empty()) {
 
         std::vector<std::shared_ptr<Solido>> solidos_bv;
+        std::vector<std::shared_ptr<Malha>> malhas_bv;
         std::shared_ptr<BoundingVolume> bounding_volume;
 
         for (std::size_t i = 0; i < dados["bounding_volumes"].size(); i++) {
 
-            solidos_bv = solidos_JSON(dados["bounding_volumes"][i], nome_arquivo_JSON, materiais);
+            solidos_bv = carregar_solidos_json(dados["bounding_volumes"][i]);
+            malhas_bv = carregar_malhas_json(dados["bounding_volumes"][i]);
+            bounding_volume = std::make_shared<BoundingVolume>();
 
-            if (solidos_bv.size() > 0) {
+            if (!dados["bounding_volumes"][i]["ajuste_volume"].empty()) {
 
-                bounding_volume = std::make_shared<BoundingVolume>();
-                for (std::size_t j = 0; j < solidos_bv.size(); j++) {
+                bounding_volume->set_ajuste_volume(dados["bounding_volumes"][i]["ajuste_volume"]);
 
-                    bounding_volume->inserir(solidos_bv[j]);
+            }
 
-                }
+            for (std::size_t j = 0; j < solidos_bv.size(); j++) {
+
+                bounding_volume->inserir(solidos_bv[j]);
+
+            }
+
+            for (std::size_t j = 0; j < malhas_bv.size(); j++) {
+
+                bounding_volume->inserir(malhas_bv[j]);
+
+            }
+
+            if (solidos_bv.size() > 0 || malhas_bv.size() > 0) {
+
                 cena.inserir_bounding_volume(bounding_volume);
 
             }
@@ -1026,7 +562,7 @@ void preparar_cena(Cena& cena, std::string nome_arquivo_JSON) {
 
 }
 
-std::vector<std::shared_ptr<Solido>> solidos_JSON (json dados, std::string nome_arquivo_JSON, std::vector<Material> materiais) {
+std::vector<std::shared_ptr<Solido>> carregar_solidos_json (json dados) {
 
     std::vector<std::shared_ptr<Solido>> solidos;
 
@@ -1034,7 +570,7 @@ std::vector<std::shared_ptr<Solido>> solidos_JSON (json dados, std::string nome_
 
         if (materiais.size() == 0) {
 
-            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": Não foi especificado nenhum material, portanto não há como inserir sólidos."));
+            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": Não foi especificado nenhum material, portanto não há como inserir sólidos."));
 
         }
 
@@ -1045,19 +581,19 @@ std::vector<std::shared_ptr<Solido>> solidos_JSON (json dados, std::string nome_
 
                 if (dados["solidos"]["planos"][i]["ponto_conhecido"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O ponto conhecido do " + std::to_string(i+1) + "º plano criado não foi especificado."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O ponto conhecido do " + std::to_string(i+1) + "º plano criado não foi especificado."));
 
                 }
 
                 if (dados["solidos"]["planos"][i]["vetor_normal"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O vetor normal do " + std::to_string(i+1) + "º plano criado não foi especificado."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O vetor normal do " + std::to_string(i+1) + "º plano criado não foi especificado."));
 
                 }
 
                 if (dados["solidos"]["planos"][i]["material"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material do " + std::to_string(i+1) + "º plano criado não foi especificado."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O material do " + std::to_string(i+1) + "º plano criado não foi especificado."));
 
                 }
 
@@ -1080,7 +616,7 @@ std::vector<std::shared_ptr<Solido>> solidos_JSON (json dados, std::string nome_
 
                 } else {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material do " + std::to_string(i+1) + "º plano criado não existe."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O material do " + std::to_string(i+1) + "º plano criado não existe."));
 
                 }
 
@@ -1099,19 +635,19 @@ std::vector<std::shared_ptr<Solido>> solidos_JSON (json dados, std::string nome_
 
                 if (dados["solidos"]["esferas"][i]["centro"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A posição do centro da " + std::to_string(i+1) + "ª esfera criada não foi especificada."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A posição do centro da " + std::to_string(i+1) + "ª esfera criada não foi especificada."));
 
                 }
 
                 if (dados["solidos"]["esferas"][i]["raio"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O raio da " + std::to_string(i+1) + "ª esfera criada não foi especificado."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O raio da " + std::to_string(i+1) + "ª esfera criada não foi especificado."));
 
                 }
 
                 if (dados["solidos"]["esferas"][i]["material"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material da " + std::to_string(i+1) + "ª esfera criada não foi especificado."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O material da " + std::to_string(i+1) + "ª esfera criada não foi especificado."));
 
                 }
 
@@ -1134,7 +670,7 @@ std::vector<std::shared_ptr<Solido>> solidos_JSON (json dados, std::string nome_
 
                 } else {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material da " + std::to_string(i+1) + "ª esfera criada não existe."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O material da " + std::to_string(i+1) + "ª esfera criada não existe."));
 
                 }
 
@@ -1153,31 +689,31 @@ std::vector<std::shared_ptr<Solido>> solidos_JSON (json dados, std::string nome_
 
                 if (dados["solidos"]["cilindros"][i]["centro_base"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A posição do centro da base do " + std::to_string(i+1) + "º cilíndro criado não foi especificada."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A posição do centro da base do " + std::to_string(i+1) + "º cilíndro criado não foi especificada."));
 
                 }
 
                 if (dados["solidos"]["cilindros"][i]["direcao"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A direção do " + std::to_string(i+1) + "º cilíndro criado não foi especificada."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A direção do " + std::to_string(i+1) + "º cilíndro criado não foi especificada."));
 
                 }
 
                 if (dados["solidos"]["cilindros"][i]["raio"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O raio do " + std::to_string(i+1) + "º cilíndro criado não foi especificado."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O raio do " + std::to_string(i+1) + "º cilíndro criado não foi especificado."));
 
                 }
 
                 if (dados["solidos"]["cilindros"][i]["altura"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A altura do " + std::to_string(i+1) + "º cilíndro criado não foi especificada."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A altura do " + std::to_string(i+1) + "º cilíndro criado não foi especificada."));
 
                 }
 
                 if (dados["solidos"]["cilindros"][i]["material"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material do " + std::to_string(i+1) + "º cilíndro criado não foi especificado."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O material do " + std::to_string(i+1) + "º cilíndro criado não foi especificado."));
 
                 }
 
@@ -1204,7 +740,7 @@ std::vector<std::shared_ptr<Solido>> solidos_JSON (json dados, std::string nome_
 
                 } else {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material do " + std::to_string(i+1) + "º cilíndro criado não existe."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O material do " + std::to_string(i+1) + "º cilíndro criado não existe."));
 
                 }
 
@@ -1223,31 +759,31 @@ std::vector<std::shared_ptr<Solido>> solidos_JSON (json dados, std::string nome_
 
                 if (dados["solidos"]["cones"][i]["centro_base"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A posição do centro da base do " + std::to_string(i+1) + "º cone criado não foi especificada."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A posição do centro da base do " + std::to_string(i+1) + "º cone criado não foi especificada."));
 
                 }
 
                 if (dados["solidos"]["cones"][i]["direcao"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A direção do " + std::to_string(i+1) + "º cone criado não foi especificada."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A direção do " + std::to_string(i+1) + "º cone criado não foi especificada."));
 
                 }
 
                 if (dados["solidos"]["cones"][i]["raio"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O raio do " + std::to_string(i+1) + "º cone criado não foi especificado."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O raio do " + std::to_string(i+1) + "º cone criado não foi especificado."));
 
                 }
 
                 if (dados["solidos"]["cones"][i]["altura"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A altura do " + std::to_string(i+1) + "º cone criado não foi especificada."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A altura do " + std::to_string(i+1) + "º cone criado não foi especificada."));
 
                 }
 
                 if (dados["solidos"]["cones"][i]["material"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material do " + std::to_string(i+1) + "º cone criado não foi especificado."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O material do " + std::to_string(i+1) + "º cone criado não foi especificado."));
 
                 }
 
@@ -1274,7 +810,7 @@ std::vector<std::shared_ptr<Solido>> solidos_JSON (json dados, std::string nome_
 
                 } else {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material do " + std::to_string(i+1) + "º cone criado não existe."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O material do " + std::to_string(i+1) + "º cone criado não existe."));
 
                 }
 
@@ -1293,25 +829,25 @@ std::vector<std::shared_ptr<Solido>> solidos_JSON (json dados, std::string nome_
 
                 if (dados["solidos"]["triangulos"][i]["vertice1"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O vértice 1 do " + std::to_string(i+1) + "º triângulo criado não foi especificado."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O vértice 1 do " + std::to_string(i+1) + "º triângulo criado não foi especificado."));
 
                 }
 
                 if (dados["solidos"]["triangulos"][i]["vertice2"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O vértice 2 do " + std::to_string(i+1) + "º triângulo criado não foi especificado."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O vértice 2 do " + std::to_string(i+1) + "º triângulo criado não foi especificado."));
 
                 }
 
                 if (dados["solidos"]["triangulos"][i]["vertice3"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O vértice 3 do " + std::to_string(i+1) + "º triângulo criado não foi especificado."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O vértice 3 do " + std::to_string(i+1) + "º triângulo criado não foi especificado."));
 
                 }
 
                 if (dados["solidos"]["triangulos"][i]["material"].empty()) {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material do " + std::to_string(i+1) + "º triângulo criado não foi especificado."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O material do " + std::to_string(i+1) + "º triângulo criado não foi especificado."));
 
                 }
 
@@ -1336,7 +872,7 @@ std::vector<std::shared_ptr<Solido>> solidos_JSON (json dados, std::string nome_
 
                 } else {
 
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material do " + std::to_string(i+1) + "º triângulo criado não existe."));
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O material do " + std::to_string(i+1) + "º triângulo criado não existe."));
 
                 }
 
@@ -1353,17 +889,518 @@ std::vector<std::shared_ptr<Solido>> solidos_JSON (json dados, std::string nome_
 
 }
 
-std::shared_ptr<Malha> carregar_malha(std::string nome_arquivo_JSON) {
+std::vector<std::shared_ptr<Malha>> carregar_malhas_json (json dados) {
+
+    std::vector<std::shared_ptr<Malha>> malhas;
+
+    if (!dados["malhas"].empty()) {
+
+        if (materiais.size() == 0) {
+
+            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": Não foi especificado nenhum material, portanto não há como inserir malhas."));
+
+        }
+
+        for (std::size_t i = 0; i < dados["malhas"].size(); i++) {
+
+            if (dados["malhas"][i]["arquivo"].empty() && dados["malhas"][i]["tipo"].empty()) {
+
+                throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": Não foi especificado um arquivo ou um tipo para a " + std::to_string(i+1) + "ª malha criada."));
+
+            }
+
+            if (dados["malhas"][i]["material"].empty()) {
+
+                throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O material da " + std::to_string(i+1) + "ª malha criada não foi especificado."));
+
+            }
+
+            std::shared_ptr<Malha> malha;
+
+            // Checando se é uma malha pré-definida
+            if (!dados["malhas"][i]["tipo"].empty()) {
+
+                if (dados["malhas"][i]["tipo"] == "retangulo") {
+
+                    if (dados["malhas"][i]["plano"].empty()) {
+
+                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O plano da " + std::to_string(i+1) + "ª malha criada (retângulo) não foi especificado."));
+
+                    }
+
+                    if (dados["malhas"][i]["centro_base"].empty()) {
+
+                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O centro da base da " + std::to_string(i+1) + "ª malha criada (retângulo) não foi especificado."));
+
+                    }
+
+                    if (dados["malhas"][i]["largura"].empty()) {
+
+                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A largura da " + std::to_string(i+1) + "ª malha criada (retângulo) não foi especificado."));
+
+                    }
+
+                    if (dados["malhas"][i]["altura"].empty()) {
+
+                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A altura da " + std::to_string(i+1) + "ª malha criada (retângulo) não foi especificado."));
+
+                    }
+
+                    if (dados["malhas"][i]["normal_sentido_positivo"].empty()) {
+
+                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O booleano que indica se o vetor normal à " + std::to_string(i+1) + "ª malha criada (retângulo) aponta para o positivo não foi especificado."));
+
+                    }
+
+                    Ponto3 centro_base;
+
+                    for (std::size_t k = 0; k < 3; k++)
+                        centro_base[k] = dados["malhas"][i]["centro_base"][k];
+
+                    if (dados["malhas"][i]["plano"] == "xy") {
+                        
+                        malha = std::make_shared<RetanguloXY>(centro_base, dados["malhas"][i]["largura"], dados["malhas"][i]["altura"], Material(), dados["malhas"][i]["normal_sentido_positivo"]);
+
+                    } else if (dados["malhas"][i]["plano"] == "xz") {
+
+                        malha = std::make_shared<RetanguloXZ>(centro_base, dados["malhas"][i]["largura"], dados["malhas"][i]["altura"], Material(), dados["malhas"][i]["normal_sentido_positivo"]);
+
+                    } else if (dados["malhas"][i]["plano"] == "yz") {
+
+                        malha = std::make_shared<RetanguloYZ>(centro_base, dados["malhas"][i]["largura"], dados["malhas"][i]["altura"], Material(), dados["malhas"][i]["normal_sentido_positivo"]);
+
+                    } else {
+
+                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O plano da " + std::to_string(i+1) + "ª malha criada (retângulo) é inválido. Valores válidos: \"xy\", \"xz\" e \"yz\""));
+                        
+                    }
+
+                } else if (dados["malhas"][i]["tipo"] == "paralelepipedo") {
+
+                    if (dados["malhas"][i]["centro_base"].empty()) {
+
+                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O centro da base da " + std::to_string(i+1) + "ª malha criada (paralelepípedo) não foi especificado."));
+
+                    }
+
+                    if (dados["malhas"][i]["largura_base"].empty()) {
+
+                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A largura da base da " + std::to_string(i+1) + "ª malha criada (paralelepípedo) não foi especificada."));
+
+                    }
+
+                    if (dados["malhas"][i]["comprimento_base"].empty()) {
+
+                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O comprimento da base da " + std::to_string(i+1) + "ª malha criada (paralelepípedo) não foi especificado."));
+
+                    }
+
+                    if (dados["malhas"][i]["altura"].empty()) {
+
+                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A altura da " + std::to_string(i+1) + "ª malha criada (paralelepípedo) não foi especificada."));
+
+                    }
+
+                    Ponto3 centro_base;
+
+                    for (std::size_t k = 0; k < 3; k++)
+                        centro_base[k] = dados["malhas"][i]["centro_base"][k];
+
+                    malha = std::make_shared<Paralelepipedo>(centro_base, dados["malhas"][i]["largura_base"], dados["malhas"][i]["comprimento_base"], dados["malhas"][i]["altura"]);
+
+                } else if (dados["malhas"][i]["tipo"] == "piramide") {
+
+                    if (dados["malhas"][i]["centro_base"].empty()) {
+
+                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O centro da base da " + std::to_string(i+1) + "ª malha criada (pirâmide) não foi especificado."));
+
+                    }
+
+                    if (dados["malhas"][i]["largura_base"].empty()) {
+
+                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A largura da base da " + std::to_string(i+1) + "ª malha criada (pirâmide) não foi especificada."));
+
+                    }
+
+                    if (dados["malhas"][i]["comprimento_base"].empty()) {
+
+                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O comprimento da base da " + std::to_string(i+1) + "ª malha criada (pirâmide) não foi especificado."));
+
+                    }
+
+                    if (dados["malhas"][i]["altura"].empty()) {
+
+                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A altura da " + std::to_string(i+1) + "ª malha criada (pirâmide) não foi especificada."));
+
+                    }
+
+                    Ponto3 centro_base;
+
+                    for (std::size_t k = 0; k < 3; k++)
+                        centro_base[k] = dados["malhas"][i]["centro_base"][k];
+
+                    malha = std::make_shared<Piramide>(centro_base, dados["malhas"][i]["largura_base"], dados["malhas"][i]["comprimento_base"], dados["malhas"][i]["altura"]);
+
+                } else {
+
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O tipo da " + std::to_string(i+1) + "ª malha criada é inválido. Valores válidos: \"retangulo\", \"paralelepipedo\" e \"piramide\"."));
+
+                }
+
+            } else {
+
+                malha = carregar_malha_json(dados["malhas"][i]["arquivo"]);
+
+            }
+
+            // Percorrendo o vetor de materiais para ver se o material utilizado pela malha existe.
+            std::size_t j = 0;
+            while (j < materiais.size() && materiais[j].get_nome() != dados["malhas"][i]["material"])
+                j++;
+
+            if (j < materiais.size()) {
+
+                malha->set_material(materiais[j]);
+
+            } else {
+
+                throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O material da " + std::to_string(i+1) + "ª criada não existe."));
+
+            }
+
+            // Checando se tem alguma transformação para ser aplicada na malha.
+            if (!dados["malhas"][i]["transformacoes"].empty()) {
+
+                // Iterando sobre as transformações para aplicá-las nas malhas.
+                for (j = 0; j < dados["malhas"][i]["transformacoes"].size(); j++) {
+
+                    if (dados["malhas"][i]["transformacoes"][j]["tipo"].empty()) {
+
+                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O tipo da " + std::to_string(j+1) + "ª transformação aplicada na " + std::to_string(i+1) + "ª malha criada não foi especificado."));
+
+                    }
+
+                    if (dados["malhas"][i]["transformacoes"][j]["tipo"] == "translacao") {
+
+                        if (dados["malhas"][i]["transformacoes"][j]["x"].empty()) {
+
+                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A " + std::to_string(j+1) + "ª transformação (translação) aplicada na " + std::to_string(i+1) + "ª malha não especifica o valor x."));
+
+                        }
+
+                        if (dados["malhas"][i]["transformacoes"][j]["y"].empty()) {
+
+                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A " + std::to_string(j+1) + "ª transformação (translação) aplicada na " + std::to_string(i+1) + "ª malha não especifica o valor y."));
+
+                        }
+
+                        if (dados["malhas"][i]["transformacoes"][j]["z"].empty()) {
+
+                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A " + std::to_string(j+1) + "ª transformação (translação) aplicada na " + std::to_string(i+1) + "ª malha não especifica o valor z."));
+
+                        }
+
+                        // Aplicando a translação na malha.
+                        malha->transladar(dados["malhas"][i]["transformacoes"][j]["x"], dados["malhas"][i]["transformacoes"][j]["y"], dados["malhas"][i]["transformacoes"][j]["z"]);
+
+                    } else if (dados["malhas"][i]["transformacoes"][j]["tipo"] == "rotacao") {
+
+                        if (dados["malhas"][i]["transformacoes"][j]["angulo"].empty()) {
+
+                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A " + std::to_string(j+1) + "ª transformação (rotação) aplicada na " + std::to_string(i+1) + "ª malha não especifica o ângulo de rotação."));
+
+                        }
+
+                        if (dados["malhas"][i]["transformacoes"][j]["eixo"].empty()) {
+
+                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A " + std::to_string(j+1) + "ª transformação (rotação) aplicada na " + std::to_string(i+1) + "ª malha não especifica o eixo."));
+
+                        }
+
+                        EixoCanonico eixo;
+
+                        if (dados["malhas"][i]["transformacoes"][j]["eixo"] == "x") {
+
+                            eixo = EIXO_X;
+
+                        } else if (dados["malhas"][i]["transformacoes"][j]["eixo"] == "y") {
+
+                            eixo = EIXO_Y;
+
+                        } else if (dados["malhas"][i]["transformacoes"][j]["eixo"] == "z") {
+
+                            eixo = EIXO_Z;
+
+                        } else {
+
+                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A " + std::to_string(j+1) + "ª transformação (rotação) aplicada na " + std::to_string(i+1) + "ª malha especifica um eixo inválido. Os valores válidos são: \"x\", \"y\" e \"z\"."));
+
+                        }
+
+                        // Aplicando rotação na malha.
+                        malha->rotacionar(dados["malhas"][i]["transformacoes"][j]["angulo"], eixo);
+
+                    } else if (dados["malhas"][i]["transformacoes"][j]["tipo"] == "rotacao_arbitraria") {
+
+                        if (dados["malhas"][i]["transformacoes"][j]["angulo"].empty()) {
+
+                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A " + std::to_string(j+1) + "ª transformação (rotação) aplicada na " + std::to_string(i+1) + "ª malha não especifica o ângulo de rotação."));
+
+                        }
+
+                        if (dados["malhas"][i]["transformacoes"][j]["ponto_eixo"].empty()) {
+
+                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A " + std::to_string(j+1) + "ª transformação (rotação arbitrária) aplicada na " + std::to_string(i+1) + "ª malha não especifica um ponto do eixo."));
+
+                        }
+
+                        if (dados["malhas"][i]["transformacoes"][j]["direcao_eixo"].empty()) {
+
+                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A " + std::to_string(j+1) + "ª transformação (rotação arbitrária) aplicada na " + std::to_string(i+1) + "ª malha não especifica a direção do eixo."));
+
+                        }
+
+                        Ponto3 ponto_eixo(dados["malhas"][i]["transformacoes"][j]["ponto_eixo"][0], dados["malhas"][i]["transformacoes"][j]["ponto_eixo"][1], dados["malhas"][i]["transformacoes"][j]["ponto_eixo"][2]);
+
+                        Vetor3 direcao_eixo(dados["malhas"][i]["transformacoes"][j]["direcao_eixo"][0], dados["malhas"][i]["transformacoes"][j]["direcao_eixo"][1], dados["malhas"][i]["transformacoes"][j]["direcao_eixo"][2]);
+
+                        // Aplicando rotação arbitrária.
+                        
+                        malha->rotacionar(dados["malhas"][i]["transformacoes"][j]["angulo"], ponto_eixo, direcao_eixo);
+
+                    }  else if (dados["malhas"][i]["transformacoes"][j]["tipo"] == "escala") {
+
+                        if (dados["malhas"][i]["transformacoes"][j]["fator_x"].empty()) {
+
+                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A " + std::to_string(j+1) + "ª transformação (escala) aplicada na " + std::to_string(i+1) + "ª malha não especifica o fator x."));
+
+                        }
+
+                        if (dados["malhas"][i]["transformacoes"][j]["fator_y"].empty()) {
+
+                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A " + std::to_string(j+1) + "ª transformação (escala) aplicada na " + std::to_string(i+1) + "ª malha não especifica o fator y."));
+
+                        }
+
+                        if (dados["malhas"][i]["transformacoes"][j]["fator_z"].empty()) {
+
+                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A " + std::to_string(j+1) + "ª transformação (escala) aplicada na " + std::to_string(i+1) + "ª malha não especifica o fator z."));
+
+                        }
+
+                        Ponto3 ponto_amarra(0.0);
+
+                        if (!dados["malhas"][i]["transformacoes"][j]["ponto_amarra"].empty()) {
+
+                            for (std::size_t k = 0; k < 3; k++) {
+
+                                ponto_amarra[k] = dados["malhas"][i]["transformacoes"][j]["ponto_amarra"][k];
+
+                            }
+
+                        }
+
+                        // Aplicando escala.
+                        malha->escalar(dados["malhas"][i]["transformacoes"][j]["fator_x"], dados["malhas"][i]["transformacoes"][j]["fator_y"], dados["malhas"][i]["transformacoes"][j]["fator_z"], ponto_amarra);
+
+                    } else if (dados["malhas"][i]["transformacoes"][j]["tipo"] == "cisalhamento") {
+
+                        if (dados["malhas"][i]["transformacoes"][j]["angulo"].empty()) {
+
+                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A " + std::to_string(j+1) + "ª transformação (cisalhamento) aplicada na " + std::to_string(i+1) + "ª malha não especifica o ângulo de cisalhamento."));
+
+                        }
+
+                        if (dados["malhas"][i]["transformacoes"][j]["eixo1"].empty()) {
+
+                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A " + std::to_string(j+1) + "ª transformação (cisalhamento) aplicada na " + std::to_string(i+1) + "ª malha não especifica o 1º eixo."));
+
+                        }
+
+                        if (dados["malhas"][i]["transformacoes"][j]["eixo2"].empty()) {
+
+                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A " + std::to_string(j+1) + "ª transformação (cisalhamento) aplicada na " + std::to_string(i+1) + "ª malha não especifica o 2º eixo."));
+
+                        }
+
+                        EixoCanonico eixo1, eixo2;
+
+                        if (dados["malhas"][i]["transformacoes"][j]["eixo1"] == "x") {
+
+                            eixo1 = EIXO_X;
+
+                        } else if (dados["malhas"][i]["transformacoes"][j]["eixo1"] == "y") {
+
+                            eixo1 = EIXO_Y;
+
+                        } else if (dados["malhas"][i]["transformacoes"][j]["eixo1"] == "z") {
+
+                            eixo1 = EIXO_Z;
+
+                        } else {
+
+                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A " + std::to_string(j+1) + "ª transformação (cisalhamento) aplicada na " + std::to_string(i+1) + "ª malha especifica um 1º eixo inválido. Os valores válidos são: \"x\", \"y\" e \"z\"."));
+
+                        }
+
+                        if (dados["malhas"][i]["transformacoes"][j]["eixo2"] == "x") {
+
+                            eixo2 = EIXO_X;
+
+                        } else if (dados["malhas"][i]["transformacoes"][j]["eixo2"] == "y") {
+
+                            eixo2 = EIXO_Y;
+
+                        } else if (dados["malhas"][i]["transformacoes"][j]["eixo2"] == "z") {
+
+                            eixo2 = EIXO_Z;
+
+                        } else {
+
+                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A " + std::to_string(j+1) + "ª transformação (cisalhamento) aplicada na " + std::to_string(i+1) + "ª malha especifica um 2º eixo inválido. Os valores válidos são: \"x\", \"y\" e \"z\"."));
+
+                        }
+
+                        if (eixo1 == eixo2) {
+
+                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A " + std::to_string(j+1) + "ª transformação (cisalhamento) aplicada na " + std::to_string(i+1) + "ª malha especifica dois eixos iguais."));
+
+                        }
+
+                        Ponto3 ponto_amarra(0.0);
+
+                        if (!dados["malhas"][i]["transformacoes"][j]["ponto_amarra"].empty()) {
+
+                            for (std::size_t k = 0; k < 3; k++) {
+
+                                ponto_amarra[k] = dados["malhas"][i]["transformacoes"][j]["ponto_amarra"][k];
+
+                            }
+
+                        }
+
+                        // Aplicando cisalhamento.
+                        malha->cisalhar(dados["malhas"][i]["transformacoes"][j]["angulo"], eixo1, eixo2, ponto_amarra);
+
+                    } else if (dados["malhas"][i]["transformacoes"][j]["tipo"] == "reflexao") {
+
+                        if (dados["malhas"][i]["transformacoes"][j]["eixo1"].empty()) {
+
+                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A " + std::to_string(j+1) + "ª transformação (reflexão) aplicada na " + std::to_string(i+1) + "ª malha não especifica o 1º eixo."));
+
+                        }
+
+                        if (dados["malhas"][i]["transformacoes"][j]["eixo2"].empty()) {
+
+                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A " + std::to_string(j+1) + "ª transformação (reflexão) aplicada na " + std::to_string(i+1) + "ª malha não especifica o 2º eixo."));
+
+                        }
+
+                        EixoCanonico eixo1, eixo2;
+
+                        if (dados["malhas"][i]["transformacoes"][j]["eixo1"] == "x") {
+
+                            eixo1 = EIXO_X;
+
+                        } else if (dados["malhas"][i]["transformacoes"][j]["eixo1"] == "y") {
+
+                            eixo1 = EIXO_Y;
+
+                        } else if (dados["malhas"][i]["transformacoes"][j]["eixo1"] == "z") {
+
+                            eixo1 = EIXO_Z;
+
+                        } else {
+
+                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A " + std::to_string(j+1) + "ª transformação (reflexão) aplicada na " + std::to_string(i+1) + "ª malha especifica um 1º eixo inválido. Os valores válidos são: \"x\", \"y\" e \"z\"."));
+
+                        }
+
+                        if (dados["malhas"][i]["transformacoes"][j]["eixo2"] == "x") {
+
+                            eixo2 = EIXO_X;
+
+                        } else if (dados["malhas"][i]["transformacoes"][j]["eixo2"] == "y") {
+
+                            eixo2 = EIXO_Y;
+
+                        } else if (dados["malhas"][i]["transformacoes"][j]["eixo2"] == "z") {
+
+                            eixo2 = EIXO_Z;
+
+                        } else {
+
+                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A " + std::to_string(j+1) + "ª transformação (reflexão) aplicada na " + std::to_string(i+1) + "ª malha especifica um 2º eixo inválido. Os valores válidos são: \"x\", \"y\" e \"z\"."));
+
+                        }
+
+                        if (eixo1 == eixo2) {
+
+                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A " + std::to_string(j+1) + "ª transformação (reflexão) aplicada na " + std::to_string(i+1) + "ª malha especifica dois eixos iguais."));
+
+                        }
+
+                        // Aplicando a reflexão.
+                        malha->refletir(eixo1, eixo2);
+
+                    } else if (dados["malhas"][i]["transformacoes"][j]["tipo"] == "reflexao_arbitraria") {
+
+                        if (dados["malhas"][i]["transformacoes"][j]["vetor_normal_plano"].empty()) {
+
+                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A " + std::to_string(j+1) + "ª transformação (reflexão arbitrária) aplicada na " + std::to_string(i+1) + "ª malha não especifica o vetor normal ao plano."));
+
+                        }
+
+                        if (dados["malhas"][i]["transformacoes"][j]["ponto_plano"].empty()) {
+
+                            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": A " + std::to_string(j+1) + "ª transformação (reflexão arbitrária) aplicada na " + std::to_string(i+1) + "ª malha não especifica um ponto conhecido do plano."));
+
+                        }
+
+                        Vetor3 vetor_normal;
+                        Ponto3 ponto_plano;
+
+                        for (int k = 0; k < 3; k++) {
+
+                            vetor_normal[k] = dados["malhas"][i]["transformacoes"][j]["vetor_normal_plano"][k];
+                            ponto_plano[k] = dados["malhas"][i]["transformacoes"][j]["ponto_plano"][k];
+                            
+                        }
+
+                        // Aplicando reflexão na malha.
+                        malha->refletir(vetor_normal, ponto_plano);
+
+                    } else {
+
+                        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_cena + ": O tipo da " + std::to_string(j+1) + "ª transformação aplicada na " + std::to_string(i+1) + "ª malha é inválido. Valores válidos: \"translacao\", \"rotacao\", \"rotacao_arbitraria\", \"escala\", \"cisalhamento\", \"reflexao\" e \"reflexao_arbitraria\"."));
+
+                    }
+
+                }
+
+            }
+
+            malhas.push_back(malha);
+
+        }
+
+    }
+
+    return malhas;
+
+}
+
+std::shared_ptr<Malha> carregar_malha_json(std::string nome_arquivo_JSON_malha) {
 
     std::shared_ptr<Malha> malha = std::make_shared<Malha>();
 
     // Abrindo conexão com o arquivo.
-    std::ifstream arquivo_JSON(nome_arquivo_JSON);
+    std::ifstream arquivo_JSON(nome_arquivo_JSON_malha);
 
     // Checando se o arquivo abriu com sucesso.
     if (!arquivo_JSON.is_open()) {
 
-        throw std::runtime_error(std::string("Erro: Não foi possível carregar a malha do arquivo \"") + nome_arquivo_JSON + "\"");
+        throw std::runtime_error(std::string("Erro: Não foi possível carregar a malha do arquivo \"") + nome_arquivo_JSON_malha + "\"");
 
     }
 
@@ -1375,19 +1412,19 @@ std::shared_ptr<Malha> carregar_malha(std::string nome_arquivo_JSON) {
 
     if (dados["vertices"].empty()) {
 
-        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": Nenhum vértice foi especificado!"));
+        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_malha + ": Nenhum vértice foi especificado!"));
 
     }
 
     if (dados["arestas"].empty()) {
 
-        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": Nenhuma aresta foi especificada!"));
+        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_malha + ": Nenhuma aresta foi especificada!"));
 
     }
 
     if (dados["faces"].empty()) {
 
-        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": Nenhuma face foi especificada!"));
+        throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON_malha + ": Nenhuma face foi especificada!"));
 
     }
 

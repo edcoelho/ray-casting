@@ -1,6 +1,5 @@
 #include "cena/Cena.hpp"
 #include <cmath>
-
 Cena::Cena(Camera camera, IntensidadeLuz I_A) {
 
     this->set_I_A(I_A);
@@ -165,7 +164,7 @@ hit_info Cena::retorna_interseccao(Raio& raio, rgb cor_padrao) {
 
             min_t_int = t_int;
             raio_intersectou = true;
-            raio_intersectou_malha = false;
+            raio_intersectou_malha = interseccao_atual.malha != nullptr;
             raio_intersectou_bounding_volume = true;
             interseccao = interseccao_atual;
 
@@ -185,31 +184,37 @@ hit_info Cena::retorna_interseccao(Raio& raio, rgb cor_padrao) {
 
         if (raio_intersectou_malha) {
 
-            // Conseguindo o triângulo intersectado.
-            solido = std::make_shared<Triangulo>(this->malhas.at(indice_malha)->get_ultima_face_intersectada());
+            if (raio_intersectou_bounding_volume) {
+
+                solido = interseccao.solido;
+
+            } else {
+
+                // Conseguindo o triângulo intersectado.
+                solido = std::make_shared<Triangulo>(this->malhas.at(indice_malha)->get_ultima_face_intersectada());
+                interseccao.malha = this->malhas.at(indice_malha);
+
+            }
 
             // Checando se a malha tem textura.
             if (solido->tem_textura()) {
 
                 // Conseguindo a cor do pixel da textura correspondente ao ponto intersectado.
-                k_textura = this->malhas.at(indice_malha)->cor_textura(p_int);
-
-            }
-
-        } else if (raio_intersectou_bounding_volume) {
-
-            solido = interseccao.solido;
-            // Checando se o sólido tem textura.
-            if (solido->tem_textura()) {
-
-                // Conseguindo a cor do pixel da textura correspondente ao ponto intersectado.
-                k_textura = solido->cor_textura(p_int);
+                k_textura = interseccao.malha->cor_textura(p_int);
 
             }
 
         } else {
 
-            solido = this->solidos.at(indice_solido);
+            if (raio_intersectou_bounding_volume) {
+
+                solido = interseccao.solido;
+
+            } else {
+
+                solido = this->solidos.at(indice_solido);
+
+            }
 
             // Checando se o sólido tem textura.
             if (solido->tem_textura()) {
@@ -218,7 +223,7 @@ hit_info Cena::retorna_interseccao(Raio& raio, rgb cor_padrao) {
                 k_textura = solido->cor_textura(p_int);
 
             }
-
+        
         }
 
         if (this->fontes_luz.size() > 0) {
@@ -333,15 +338,6 @@ hit_info Cena::retorna_interseccao(Raio& raio, rgb cor_padrao) {
         I_final = I_final + I_A;
 
         interseccao.cor = I_final.cor_rgb();
-        if (raio_intersectou_malha) {
-
-            interseccao.malha = this->malhas.at(indice_malha);
-
-        } else {
-
-            interseccao.solido = solido;
-
-        }
 
     } else {
 

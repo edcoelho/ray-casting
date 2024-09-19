@@ -619,3 +619,22 @@ void Malha::refletir(Vetor3 vetor_normal_plano, Ponto3 ponto_plano) {
     }
 
 }
+
+std::pair<Ponto3, Ponto3> Malha::pontos_min_max () const {
+
+    std::pair<Ponto3, Ponto3> resultado(Ponto3(INFINITY), Ponto3(-INFINITY));
+
+    for (std::size_t i = 0; i < this->vertices.size(); i++) {
+
+        for (std::size_t j = 0; j < 3; j++) {
+
+            if (this->vertices[i][j] < resultado.first[j]) resultado.first[j] = this->vertices[i][j];
+            if (this->vertices[i][j] > resultado.second[j]) resultado.second[j] = this->vertices[i][j];
+
+        }
+
+    }
+
+    return resultado;
+
+}

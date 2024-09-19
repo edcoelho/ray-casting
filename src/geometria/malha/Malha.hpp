@@ -116,6 +116,9 @@ class Malha {
             // Aplica uma reflexão em um plano arbitrário.
             virtual void refletir(Vetor3 vetor_normal_plano, Ponto3 ponto_plano = Ponto3(0.0));
 
+            // Retorna o ponto mínimo e ponto máximo da malha.
+            std::pair<Ponto3, Ponto3> pontos_min_max () const;
+
 };
 
 #endif
