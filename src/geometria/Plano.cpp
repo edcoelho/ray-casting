@@ -123,3 +123,9 @@ IntensidadeLuz Plano::cor_textura(Ponto3 ponto) {
     return IntensidadeLuz(cor_pixel);
 
 }
+
+std::pair<Ponto3, Ponto3> Plano::pontos_min_max () const {
+
+    return std::pair<Ponto3, Ponto3> (Ponto3(INFINITY), Ponto3(-INFINITY));
+
+}

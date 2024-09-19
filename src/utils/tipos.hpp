@@ -3,6 +3,7 @@
 
 #include <array>
 #include <vector>
+#include <memory>
 
 // --- DEFINIÇÕES DE TIPOS E ESTRUTURAS ---
 

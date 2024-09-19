@@ -303,6 +303,79 @@
 
         }
 
+    ],
+
+    "bounding_volumes": [
+
+        "solidos": {
+
+            "planos": [
+
+                {
+
+                    "ponto_conhecido": [0.0, 0.0, 0.0],
+                    "vetor_normal": [0.0, 1.0, 0.0],
+                    "material": "nome_material1"
+
+                }
+
+            ],
+
+            "esferas": [
+
+                {
+
+                    "centro": [0.0, 0.0, 0.0],
+                    "raio": 1.0,
+                    "material": "nome_material1"
+
+                }
+
+            ],
+
+            "cilindros": [
+
+                {
+
+                    "centro_base": [0.0, 0.0, 0.0],
+                    "direcao": [0.0, 1.0, 0.0],
+                    "raio": 1.0,
+                    "altura": 1.0,
+                    "material": "nome_material1"
+
+                }
+
+            ],
+
+            "cones": [
+
+                {
+
+                    "centro_base": [0.0, 0.0, 0.0],
+                    "direcao": [0.0, 1.0, 0.0],
+                    "raio": 0.0,
+                    "altura": 1.0,
+                    "material": "nome_material1"
+
+                }
+
+            ],
+
+            "triangulos": [
+
+                {
+
+                    "vertice1": [0.0, 0.0, 0.0],
+                    "vertice2": [0.0, 0.0, 0.0],
+                    "vertice3": [0.0, 0.0, 0.0],
+                    "material": "nome_material1"
+
+                }
+
+            ]
+
+        }
+
     ]
 
 }

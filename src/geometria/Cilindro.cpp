@@ -1,5 +1,6 @@
 #include "geometria/Cilindro.hpp"
 #include <cmath>
+#include <algorithm>
 
 Cilindro::Cilindro(Material material) : Solido("Cilíndro", material) {
 
@@ -378,3 +379,38 @@ Vetor3 Cilindro::vetor_normal_ponto(Ponto3 ponto) const {
 }
 
 IntensidadeLuz Cilindro::cor_textura(Ponto3 ponto) { return this->get_material().get_k_D(); }
+
+std::pair<Ponto3, Ponto3> Cilindro::pontos_min_max () const {
+
+    std::vector<Ponto3> pontos;
+    std::pair<Ponto3, Ponto3> resultado;
+
+    pontos.reserve(8);
+
+    Vetor3
+        j = this->direcao,
+        k = j.vetorial(this->centro_base.vetor()).unitario() * this->raio,
+        i = j.vetorial(k).unitario() * this->raio;
+
+    pontos.push_back(this->centro_base + i);
+    pontos.push_back(this->centro_base - i);
+
+    pontos.push_back(this->centro_base + k);
+    pontos.push_back(this->centro_base - k);
+
+    pontos.push_back(this->centro_topo + i);
+    pontos.push_back(this->centro_topo - i);
+
+    pontos.push_back(this->centro_topo + k);
+    pontos.push_back(this->centro_topo - k);
+
+    for (std::size_t eixo = 0; eixo < 3; eixo++) {
+
+        resultado.first[eixo] = std::min({pontos[0][eixo], pontos[1][eixo], pontos[2][eixo], pontos[3][eixo], pontos[4][eixo]});
+        resultado.second[eixo] = std::max({pontos[0][eixo], pontos[1][eixo], pontos[2][eixo], pontos[3][eixo], pontos[4][eixo]});
+
+    }
+
+    return resultado;
+
+}

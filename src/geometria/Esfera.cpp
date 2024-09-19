@@ -1,5 +1,6 @@
 #include "geometria/Esfera.hpp"
 #include <cmath>
+#include <algorithm>
 
 Esfera::Esfera(Material material) : Solido("Esfera", material) {
 
@@ -82,3 +83,35 @@ Vetor3 Esfera::vetor_normal_ponto(Ponto3 ponto) const {
 }
 
 IntensidadeLuz Esfera::cor_textura(Ponto3 ponto) { return this->get_material().get_k_D(); }
+
+std::pair<Ponto3, Ponto3> Esfera::pontos_min_max () const {
+
+    std::vector<Ponto3> pontos;
+    std::pair<Ponto3, Ponto3> resultado;
+
+    pontos.reserve(6);
+
+    Vetor3
+        j(0.0, 1.0, 0.0),
+        k = j.vetorial(this->centro.vetor()).unitario() * this->raio,
+        i = j.vetorial(k).unitario() * this->raio;
+
+    pontos.push_back(this->centro + i);
+    pontos.push_back(this->centro - i);
+
+    pontos.push_back(this->centro + j);
+    pontos.push_back(this->centro - j);
+
+    pontos.push_back(this->centro + k);
+    pontos.push_back(this->centro - k);
+
+    for (std::size_t eixo = 0; eixo < 3; eixo++) {
+
+        resultado.first[eixo] = std::min({pontos[0][eixo], pontos[1][eixo], pontos[2][eixo], pontos[3][eixo], pontos[4][eixo], pontos[5][eixo]});
+        resultado.second[eixo] = std::max({pontos[0][eixo], pontos[1][eixo], pontos[2][eixo], pontos[3][eixo], pontos[4][eixo], pontos[5][eixo]});
+
+    }
+
+    return resultado;
+
+}

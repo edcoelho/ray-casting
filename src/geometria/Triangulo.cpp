@@ -1,6 +1,7 @@
 #include "geometria/Triangulo.hpp"
 #include "geometria/Plano.hpp"
 #include <cmath>
+#include <algorithm>
 
 Triangulo::Triangulo(Material material) : Solido("Triângulo", material) {
 
@@ -157,3 +158,18 @@ Vetor3 Triangulo::vetor_normal_ponto(Ponto3 ponto) const {
 }
 
 IntensidadeLuz Triangulo::cor_textura(Ponto3 ponto) { return this->get_material().get_k_D(); }
+
+std::pair<Ponto3, Ponto3> Triangulo::pontos_min_max () const {
+
+    std::pair<Ponto3, Ponto3> resultado;
+
+    for (std::size_t i = 0; i < 3; i++) {
+
+        resultado.first[i] = std::min({this->vertice1[i], this->vertice2[i], this->vertice3[i]});
+        resultado.second[i] = std::max({this->vertice1[i], this->vertice2[i], this->vertice3[i]});
+
+    }
+
+    return resultado;
+
+}

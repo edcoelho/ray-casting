@@ -54,6 +54,9 @@ class Cilindro : public Solido {
 
         // Retorna cor em formato de IntensidadeLuz do pixel da textura correspondente a um ponto.
         IntensidadeLuz cor_textura(Ponto3 ponto) override;
+
+        // Retorna o ponto mínimo e ponto máximo do cone.
+        std::pair<Ponto3, Ponto3> pontos_min_max () const override;
         
 };
 

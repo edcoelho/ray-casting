@@ -43,6 +43,9 @@ class Solido {
         // Retorna cor em formato de IntensidadeLuz do pixel da textura correspondente a um ponto.
         virtual IntensidadeLuz cor_textura(Ponto3 ponto) = 0;
 
+        // Retorna o ponto mínimo e ponto máximo do sólido.
+        virtual std::pair<Ponto3, Ponto3> pontos_min_max () const = 0;
+
 };
 
 #endif

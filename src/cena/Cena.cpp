@@ -42,13 +42,19 @@ void Cena::inserir_malha(std::shared_ptr<Malha> malha) {
 
 }
 
+void Cena::inserir_bounding_volume(std::shared_ptr<BoundingVolume> bounding_volume) {
+
+    this->bounding_volumes.push_back(std::move(bounding_volume));
+
+}
+
 void Cena::inserir_fonte_luz(std::unique_ptr<FonteLuz> luz) {
 
     this->fontes_luz.push_back(std::move(luz));
 
 }
 
-tupla_interseccao Cena::retorna_interseccao(Raio& raio, rgb cor_padrao) {
+hit_info Cena::retorna_interseccao(Raio& raio, rgb cor_padrao) {
 
     // Índice do sólido intersectado primeiro pelo raio da câmera.
     std::size_t indice_solido;
@@ -60,6 +66,8 @@ tupla_interseccao Cena::retorna_interseccao(Raio& raio, rgb cor_padrao) {
     bool raio_intersectou = false;
     // Indica se um raio intersectou uma malha primeiro.
     bool raio_intersectou_malha = false;
+    // Indica se um raio intersectou um bounding_volume primeiro.
+    bool raio_intersectou_bounding_volume = false;
 
     // Indica se um raio de luz foi obstruído por um outro sólido.
     bool raio_luz_obstruido = false;
@@ -96,8 +104,10 @@ tupla_interseccao Cena::retorna_interseccao(Raio& raio, rgb cor_padrao) {
     // Ponteiro para cópia do solido intersectado.
     std::shared_ptr<Solido> solido(nullptr);
 
-    // Informações da intersecção.
-    tupla_interseccao interseccao;
+    // Informações da intersecção retornada.
+    hit_info interseccao = {I_final.cor_rgb(), nullptr, nullptr, nullptr, 0.0, false};
+    // Informações da intersecção que está em análise.
+    hit_info interseccao_atual;
 
     // -------------------------------------------------------------
     // --- CÁLCULO DA INTERSECÇÃO MAIS PRÓXIMA DO RAIO DA CÂMERA ---
@@ -116,6 +126,7 @@ tupla_interseccao Cena::retorna_interseccao(Raio& raio, rgb cor_padrao) {
                 min_t_int = t_int;
                 indice_solido = i;
                 raio_intersectou = true;
+                raio_intersectou_malha = false;
 
             }
 
@@ -144,6 +155,24 @@ tupla_interseccao Cena::retorna_interseccao(Raio& raio, rgb cor_padrao) {
 
     }
 
+    // Checando bounding volumes.
+    for (std::size_t i = 0; i < this->bounding_volumes.size(); i++) {
+
+        interseccao_atual = this->bounding_volumes.at(i)->calcula_interseccao(raio);
+        t_int = interseccao_atual.distancia;
+
+        if (t_int >= 0.0 && t_int < min_t_int) {
+
+            min_t_int = t_int;
+            raio_intersectou = true;
+            raio_intersectou_malha = false;
+            raio_intersectou_bounding_volume = true;
+            interseccao = interseccao_atual;
+
+        }
+
+    }
+
     // -----------------------------
     // --- CÁLCULO DA ILUMINAÇÃO ---
     // -----------------------------
@@ -164,6 +193,17 @@ tupla_interseccao Cena::retorna_interseccao(Raio& raio, rgb cor_padrao) {
 
                 // Conseguindo a cor do pixel da textura correspondente ao ponto intersectado.
                 k_textura = this->malhas.at(indice_malha)->cor_textura(p_int);
+
+            }
+
+        } else if (raio_intersectou_bounding_volume) {
+
+            solido = interseccao.solido;
+            // Checando se o sólido tem textura.
+            if (solido->tem_textura()) {
+
+                // Conseguindo a cor do pixel da textura correspondente ao ponto intersectado.
+                k_textura = solido->cor_textura(p_int);
 
             }
 
@@ -292,21 +332,22 @@ tupla_interseccao Cena::retorna_interseccao(Raio& raio, rgb cor_padrao) {
 
         I_final = I_final + I_A;
 
+        interseccao.cor = I_final.cor_rgb();
         if (raio_intersectou_malha) {
 
-            interseccao = std::make_tuple(I_final.cor_rgb(), nullptr, this->malhas.at(indice_malha));
+            interseccao.malha = this->malhas.at(indice_malha);
 
         } else {
 
-            interseccao = std::make_tuple(I_final.cor_rgb(), this->solidos.at(indice_solido), nullptr);
+            interseccao.solido = solido;
 
         }
 
     } else {
 
-        I_final = IntensidadeLuz(cor_padrao);
+        interseccao.cor = cor_padrao;
 
-        return tupla_interseccao(I_final.cor_rgb(), nullptr, nullptr);
+        return interseccao;
 
     }
 

@@ -8,6 +8,9 @@ void preparar_canvas(Canvas& canvas, std::string nome_arquivo_JSON);
 // Função para preparar uma cena descrita em um arquivo JSON.
 void preparar_cena(Cena& cena, std::string nome_arquivo_JSON);
 
+// Retorna os sólidos recuperados do arquivo JSON.
+std::vector<std::shared_ptr<Solido>> solidos_JSON (json dados, std::string nome_arquivo_JSON, std::vector<Material> materiais);
+
 // Função para carregar para uma cena uma malha descrita em um arquivo JSON.
 std::shared_ptr<Malha> carregar_malha(std::string nome_arquivo_JSON);
 
@@ -483,312 +486,11 @@ void preparar_cena(Cena& cena, std::string nome_arquivo_JSON) {
 
         }
 
-        // Checando se tem algum plano especificado.
-        if (!dados["solidos"]["planos"].empty()) {
+        std::vector<std::shared_ptr<Solido>> solidos = solidos_JSON(dados, nome_arquivo_JSON, materiais);
 
-            for (std::size_t i = 0; i < dados["solidos"]["planos"].size(); i++) {
+        for (std::size_t i = 0; i < solidos.size(); i++) {
 
-                if (dados["solidos"]["planos"][i]["ponto_conhecido"].empty()) {
-
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O ponto conhecido do " + std::to_string(i+1) + "º plano criado não foi especificado."));
-
-                }
-
-                if (dados["solidos"]["planos"][i]["vetor_normal"].empty()) {
-
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O vetor normal do " + std::to_string(i+1) + "º plano criado não foi especificado."));
-
-                }
-
-                if (dados["solidos"]["planos"][i]["material"].empty()) {
-
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material do " + std::to_string(i+1) + "º plano criado não foi especificado."));
-
-                }
-
-                // Criando o plano.
-                std::shared_ptr<Plano> plano = std::make_shared<Plano>();
-
-                plano->set_ponto(Ponto3(dados["solidos"]["planos"][i]["ponto_conhecido"][0], dados["solidos"]["planos"][i]["ponto_conhecido"][1], dados["solidos"]["planos"][i]["ponto_conhecido"][2]));
-
-                plano->set_normal(Vetor3(dados["solidos"]["planos"][i]["vetor_normal"][0], dados["solidos"]["planos"][i]["vetor_normal"][1], dados["solidos"]["planos"][i]["vetor_normal"][2]));
-
-                std::size_t j = 0;
-
-                // Percorrendo o vetor de materiais para ver se o material utilizado pelo plano existe.
-                while (j < materiais.size() && materiais[j].get_nome() != dados["solidos"]["planos"][i]["material"])
-                    j++;
-
-                if (j < materiais.size()) {
-
-                    plano->set_material(materiais[j]);
-
-                } else {
-
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material do " + std::to_string(i+1) + "º plano criado não existe."));
-
-                }
-
-                // Inserindo o plano na cena.
-                cena.inserir_solido(std::move(plano));
-
-            }
-
-        }
-
-        // Checando se tem alguma esfera especificada.
-        if (!dados["solidos"]["esferas"].empty()) {
-
-            // Iterando sobre as esferas especificadas para inserí-las na cena.
-            for (std::size_t i = 0; i < dados["solidos"]["esferas"].size(); i++) {
-
-                if (dados["solidos"]["esferas"][i]["centro"].empty()) {
-
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A posição do centro da " + std::to_string(i+1) + "ª esfera criada não foi especificada."));
-
-                }
-
-                if (dados["solidos"]["esferas"][i]["raio"].empty()) {
-
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O raio da " + std::to_string(i+1) + "ª esfera criada não foi especificado."));
-
-                }
-
-                if (dados["solidos"]["esferas"][i]["material"].empty()) {
-
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material da " + std::to_string(i+1) + "ª esfera criada não foi especificado."));
-
-                }
-
-                // Criando a esfera.
-                std::shared_ptr<Esfera> esfera = std::make_shared<Esfera>();
-
-                esfera->set_centro(Ponto3(dados["solidos"]["esferas"][i]["centro"][0], dados["solidos"]["esferas"][i]["centro"][1], dados["solidos"]["esferas"][i]["centro"][2]));
-
-                esfera->set_raio(dados["solidos"]["esferas"][i]["raio"]);
-                
-                std::size_t j = 0;
-
-                // Percorrendo o vetor de materiais para ver se o material utilizado pela esfera existe.
-                while (j < materiais.size() && materiais[j].get_nome() != dados["solidos"]["esferas"][i]["material"])
-                    j++;
-
-                if (j < materiais.size()) {
-
-                    esfera->set_material(materiais[j]);
-
-                } else {
-
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material da " + std::to_string(i+1) + "ª esfera criada não existe."));
-
-                }
-
-                // Inserindo a esfera na cena.
-                cena.inserir_solido(std::move(esfera));
-
-            }
-
-        }
-
-        // Checando se tem algum cilíndro especificado.
-        if (!dados["solidos"]["cilindros"].empty()) {
-
-            // Iterando sobre os cilíndros especificados para inserí-los na cena.
-            for (std::size_t i = 0; i < dados["solidos"]["cilindros"].size(); i++) {
-
-                if (dados["solidos"]["cilindros"][i]["centro_base"].empty()) {
-
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A posição do centro da base do " + std::to_string(i+1) + "º cilíndro criado não foi especificada."));
-
-                }
-
-                if (dados["solidos"]["cilindros"][i]["direcao"].empty()) {
-
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A direção do " + std::to_string(i+1) + "º cilíndro criado não foi especificada."));
-
-                }
-
-                if (dados["solidos"]["cilindros"][i]["raio"].empty()) {
-
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O raio do " + std::to_string(i+1) + "º cilíndro criado não foi especificado."));
-
-                }
-
-                if (dados["solidos"]["cilindros"][i]["altura"].empty()) {
-
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A altura do " + std::to_string(i+1) + "º cilíndro criado não foi especificada."));
-
-                }
-
-                if (dados["solidos"]["cilindros"][i]["material"].empty()) {
-
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material do " + std::to_string(i+1) + "º cilíndro criado não foi especificado."));
-
-                }
-
-                // Criando o cilíndro.
-                std::shared_ptr<Cilindro> cilindro = std::make_shared<Cilindro>();
-
-                cilindro->set_centro_base(Ponto3(dados["solidos"]["cilindros"][i]["centro_base"][0], dados["solidos"]["cilindros"][i]["centro_base"][1], dados["solidos"]["cilindros"][i]["centro_base"][2]), false);
-
-                cilindro->set_direcao(Vetor3(dados["solidos"]["cilindros"][i]["direcao"][0], dados["solidos"]["cilindros"][i]["direcao"][1], dados["solidos"]["cilindros"][i]["direcao"][2]), false);
-
-                cilindro->set_raio(dados["solidos"]["cilindros"][i]["raio"]);
-
-                cilindro->set_altura(dados["solidos"]["cilindros"][i]["altura"]);
-
-                std::size_t j = 0;
-
-                // Percorrendo o vetor de materiais para ver se o material utilizado pelo cilíndro existe.
-                while (j < materiais.size() && materiais[j].get_nome() != dados["solidos"]["cilindros"][i]["material"])
-                    j++;
-
-                if (j < materiais.size()) {
-
-                    cilindro->set_material(materiais[j]);
-
-                } else {
-
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material do " + std::to_string(i+1) + "º cilíndro criado não existe."));
-
-                }
-
-                // Inserindo o cilíndro na cena.
-                cena.inserir_solido(std::move(cilindro));
-
-            }
-
-        }
-
-        // Checando se tem algum cone especificado.
-        if (!dados["solidos"]["cones"].empty()) {
-
-            // Iterando sobre os cones especificados para inserí-los na cena.
-            for (std::size_t i = 0; i < dados["solidos"]["cones"].size(); i++) {
-
-                if (dados["solidos"]["cones"][i]["centro_base"].empty()) {
-
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A posição do centro da base do " + std::to_string(i+1) + "º cone criado não foi especificada."));
-
-                }
-
-                if (dados["solidos"]["cones"][i]["direcao"].empty()) {
-
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A direção do " + std::to_string(i+1) + "º cone criado não foi especificada."));
-
-                }
-
-                if (dados["solidos"]["cones"][i]["raio"].empty()) {
-
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O raio do " + std::to_string(i+1) + "º cone criado não foi especificado."));
-
-                }
-
-                if (dados["solidos"]["cones"][i]["altura"].empty()) {
-
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A altura do " + std::to_string(i+1) + "º cone criado não foi especificada."));
-
-                }
-
-                if (dados["solidos"]["cones"][i]["material"].empty()) {
-
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material do " + std::to_string(i+1) + "º cone criado não foi especificado."));
-
-                }
-
-                // Criando o cone.
-                std::shared_ptr<Cone> cone = std::make_shared<Cone>();
-
-                cone->set_centro_base(Ponto3(dados["solidos"]["cones"][i]["centro_base"][0], dados["solidos"]["cones"][i]["centro_base"][1], dados["solidos"]["cones"][i]["centro_base"][2]), false);
-
-                cone->set_direcao(Vetor3(dados["solidos"]["cones"][i]["direcao"][0], dados["solidos"]["cones"][i]["direcao"][1], dados["solidos"]["cones"][i]["direcao"][2]), false);
-
-                cone->set_raio_base(dados["solidos"]["cones"][i]["raio"]);
-
-                cone->set_altura(dados["solidos"]["cones"][i]["altura"]);
-
-                std::size_t j = 0;
-
-                // Percorrendo o vetor de materiais para ver se o material utilizado pelo cone existe.
-                while (j < materiais.size() && materiais[j].get_nome() != dados["solidos"]["cones"][i]["material"])
-                    j++;
-
-                if (j < materiais.size()) {
-
-                    cone->set_material(materiais[j]);
-
-                } else {
-
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material do " + std::to_string(i+1) + "º cone criado não existe."));
-
-                }
-
-                // Inserindo o cilíndro na cena.
-                cena.inserir_solido(std::move(cone));
-
-            }
-
-        }
-
-        // Checando se tem algum triangulo especificado.
-        if (!dados["solidos"]["triangulos"].empty()) {
-
-            // Iterando sobre os triângulos especificados para inserí-los na cena.
-            for (std::size_t i = 0; i < dados["solidos"]["triangulos"].size(); i++) {
-
-                if (dados["solidos"]["triangulos"][i]["vertice1"].empty()) {
-
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O vértice 1 do " + std::to_string(i+1) + "º triângulo criado não foi especificado."));
-
-                }
-
-                if (dados["solidos"]["triangulos"][i]["vertice2"].empty()) {
-
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O vértice 2 do " + std::to_string(i+1) + "º triângulo criado não foi especificado."));
-
-                }
-
-                if (dados["solidos"]["triangulos"][i]["vertice3"].empty()) {
-
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O vértice 3 do " + std::to_string(i+1) + "º triângulo criado não foi especificado."));
-
-                }
-
-                if (dados["solidos"]["triangulos"][i]["material"].empty()) {
-
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material do " + std::to_string(i+1) + "º triângulo criado não foi especificado."));
-
-                }
-
-                // Criando o triângulo.
-                std::shared_ptr<Triangulo> triangulo = std::make_shared<Triangulo>();
-
-                triangulo->set_vertice1(Ponto3(dados["solidos"]["triangulos"][i]["vertice1"][0], dados["solidos"]["triangulos"][i]["vertice1"][1], dados["solidos"]["triangulos"][i]["vertice1"][2]));
-
-                triangulo->set_vertice1(Ponto3(dados["solidos"]["triangulos"][i]["vertice2"][0], dados["solidos"]["triangulos"][i]["vertice2"][1], dados["solidos"]["triangulos"][i]["vertice2"][2]));
-
-                triangulo->set_vertice1(Ponto3(dados["solidos"]["triangulos"][i]["vertice3"][0], dados["solidos"]["triangulos"][i]["vertice3"][1], dados["solidos"]["triangulos"][i]["vertice3"][2]));
-
-                std::size_t j = 0;
-
-                // Percorrendo o vetor de materiais para ver se o material utilizado pelo triângulo existe.
-                while (j < materiais.size() && materiais[j].get_nome() != dados["solidos"]["triangulos"][i]["material"])
-                    j++;
-
-                if (j < materiais.size()) {
-
-                    triangulo->set_material(materiais[j]);
-
-                } else {
-
-                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material do " + std::to_string(i+1) + "º triângulo criado não existe."));
-
-                }
-
-                // Inserindo o cilíndro na cena.
-                cena.inserir_solido(std::move(triangulo));
-
-            }
+            cena.inserir_solido(solidos.at(i));
 
         }
 
@@ -1292,6 +994,362 @@ void preparar_cena(Cena& cena, std::string nome_arquivo_JSON) {
     }
 
     // --- FIM DA INSERÇÃO DE MALHAS NA CENA ---
+
+    // --- INÍCIO DA INSERÇÃO DE BOUNDING VOLUMES NA CENA ---
+
+    if (!dados["bounding_volumes"].empty()) {
+
+        std::vector<std::shared_ptr<Solido>> solidos_bv;
+        std::shared_ptr<BoundingVolume> bounding_volume;
+
+        for (std::size_t i = 0; i < dados["bounding_volumes"].size(); i++) {
+
+            solidos_bv = solidos_JSON(dados["bounding_volumes"][i], nome_arquivo_JSON, materiais);
+
+            if (solidos_bv.size() > 0) {
+
+                bounding_volume = std::make_shared<BoundingVolume>();
+                for (std::size_t j = 0; j < solidos_bv.size(); j++) {
+
+                    bounding_volume->inserir(solidos_bv[j]);
+
+                }
+                cena.inserir_bounding_volume(bounding_volume);
+
+            }
+
+        }
+
+    }
+
+    // --- FIM DA INSERÇÃO DE BOUNDING VOLUMES NA CENA ---
+
+}
+
+std::vector<std::shared_ptr<Solido>> solidos_JSON (json dados, std::string nome_arquivo_JSON, std::vector<Material> materiais) {
+
+    std::vector<std::shared_ptr<Solido>> solidos;
+
+    if (!dados["solidos"].empty()) {
+
+        if (materiais.size() == 0) {
+
+            throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": Não foi especificado nenhum material, portanto não há como inserir sólidos."));
+
+        }
+
+        // Checando se tem algum plano especificado.
+        if (!dados["solidos"]["planos"].empty()) {
+
+            for (std::size_t i = 0; i < dados["solidos"]["planos"].size(); i++) {
+
+                if (dados["solidos"]["planos"][i]["ponto_conhecido"].empty()) {
+
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O ponto conhecido do " + std::to_string(i+1) + "º plano criado não foi especificado."));
+
+                }
+
+                if (dados["solidos"]["planos"][i]["vetor_normal"].empty()) {
+
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O vetor normal do " + std::to_string(i+1) + "º plano criado não foi especificado."));
+
+                }
+
+                if (dados["solidos"]["planos"][i]["material"].empty()) {
+
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material do " + std::to_string(i+1) + "º plano criado não foi especificado."));
+
+                }
+
+                // Criando o plano.
+                std::shared_ptr<Plano> plano = std::make_shared<Plano>();
+
+                plano->set_ponto(Ponto3(dados["solidos"]["planos"][i]["ponto_conhecido"][0], dados["solidos"]["planos"][i]["ponto_conhecido"][1], dados["solidos"]["planos"][i]["ponto_conhecido"][2]));
+
+                plano->set_normal(Vetor3(dados["solidos"]["planos"][i]["vetor_normal"][0], dados["solidos"]["planos"][i]["vetor_normal"][1], dados["solidos"]["planos"][i]["vetor_normal"][2]));
+
+                std::size_t j = 0;
+
+                // Percorrendo o vetor de materiais para ver se o material utilizado pelo plano existe.
+                while (j < materiais.size() && materiais[j].get_nome() != dados["solidos"]["planos"][i]["material"])
+                    j++;
+
+                if (j < materiais.size()) {
+
+                    plano->set_material(materiais[j]);
+
+                } else {
+
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material do " + std::to_string(i+1) + "º plano criado não existe."));
+
+                }
+
+                // Guardando o plano.
+                solidos.push_back(std::move(plano));
+
+            }
+
+        }
+
+        // Checando se tem alguma esfera especificada.
+        if (!dados["solidos"]["esferas"].empty()) {
+
+            // Iterando sobre as esferas especificadas para inserí-las na cena.
+            for (std::size_t i = 0; i < dados["solidos"]["esferas"].size(); i++) {
+
+                if (dados["solidos"]["esferas"][i]["centro"].empty()) {
+
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A posição do centro da " + std::to_string(i+1) + "ª esfera criada não foi especificada."));
+
+                }
+
+                if (dados["solidos"]["esferas"][i]["raio"].empty()) {
+
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O raio da " + std::to_string(i+1) + "ª esfera criada não foi especificado."));
+
+                }
+
+                if (dados["solidos"]["esferas"][i]["material"].empty()) {
+
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material da " + std::to_string(i+1) + "ª esfera criada não foi especificado."));
+
+                }
+
+                // Criando a esfera.
+                std::shared_ptr<Esfera> esfera = std::make_shared<Esfera>();
+
+                esfera->set_centro(Ponto3(dados["solidos"]["esferas"][i]["centro"][0], dados["solidos"]["esferas"][i]["centro"][1], dados["solidos"]["esferas"][i]["centro"][2]));
+
+                esfera->set_raio(dados["solidos"]["esferas"][i]["raio"]);
+                
+                std::size_t j = 0;
+
+                // Percorrendo o vetor de materiais para ver se o material utilizado pela esfera existe.
+                while (j < materiais.size() && materiais[j].get_nome() != dados["solidos"]["esferas"][i]["material"])
+                    j++;
+
+                if (j < materiais.size()) {
+
+                    esfera->set_material(materiais[j]);
+
+                } else {
+
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material da " + std::to_string(i+1) + "ª esfera criada não existe."));
+
+                }
+
+                // Guardando a esfera
+                solidos.push_back(std::move(esfera));
+
+            }
+
+        }
+
+        // Checando se tem algum cilíndro especificado.
+        if (!dados["solidos"]["cilindros"].empty()) {
+
+            // Iterando sobre os cilíndros especificados para inserí-los na cena.
+            for (std::size_t i = 0; i < dados["solidos"]["cilindros"].size(); i++) {
+
+                if (dados["solidos"]["cilindros"][i]["centro_base"].empty()) {
+
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A posição do centro da base do " + std::to_string(i+1) + "º cilíndro criado não foi especificada."));
+
+                }
+
+                if (dados["solidos"]["cilindros"][i]["direcao"].empty()) {
+
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A direção do " + std::to_string(i+1) + "º cilíndro criado não foi especificada."));
+
+                }
+
+                if (dados["solidos"]["cilindros"][i]["raio"].empty()) {
+
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O raio do " + std::to_string(i+1) + "º cilíndro criado não foi especificado."));
+
+                }
+
+                if (dados["solidos"]["cilindros"][i]["altura"].empty()) {
+
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A altura do " + std::to_string(i+1) + "º cilíndro criado não foi especificada."));
+
+                }
+
+                if (dados["solidos"]["cilindros"][i]["material"].empty()) {
+
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material do " + std::to_string(i+1) + "º cilíndro criado não foi especificado."));
+
+                }
+
+                // Criando o cilíndro.
+                std::shared_ptr<Cilindro> cilindro = std::make_shared<Cilindro>();
+
+                cilindro->set_centro_base(Ponto3(dados["solidos"]["cilindros"][i]["centro_base"][0], dados["solidos"]["cilindros"][i]["centro_base"][1], dados["solidos"]["cilindros"][i]["centro_base"][2]), false);
+
+                cilindro->set_direcao(Vetor3(dados["solidos"]["cilindros"][i]["direcao"][0], dados["solidos"]["cilindros"][i]["direcao"][1], dados["solidos"]["cilindros"][i]["direcao"][2]), false);
+
+                cilindro->set_raio(dados["solidos"]["cilindros"][i]["raio"]);
+
+                cilindro->set_altura(dados["solidos"]["cilindros"][i]["altura"]);
+
+                std::size_t j = 0;
+
+                // Percorrendo o vetor de materiais para ver se o material utilizado pelo cilíndro existe.
+                while (j < materiais.size() && materiais[j].get_nome() != dados["solidos"]["cilindros"][i]["material"])
+                    j++;
+
+                if (j < materiais.size()) {
+
+                    cilindro->set_material(materiais[j]);
+
+                } else {
+
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material do " + std::to_string(i+1) + "º cilíndro criado não existe."));
+
+                }
+
+                // Guardando o cilíndro.
+                solidos.push_back(std::move(cilindro));
+
+            }
+
+        }
+
+        // Checando se tem algum cone especificado.
+        if (!dados["solidos"]["cones"].empty()) {
+
+            // Iterando sobre os cones especificados para inserí-los na cena.
+            for (std::size_t i = 0; i < dados["solidos"]["cones"].size(); i++) {
+
+                if (dados["solidos"]["cones"][i]["centro_base"].empty()) {
+
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A posição do centro da base do " + std::to_string(i+1) + "º cone criado não foi especificada."));
+
+                }
+
+                if (dados["solidos"]["cones"][i]["direcao"].empty()) {
+
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A direção do " + std::to_string(i+1) + "º cone criado não foi especificada."));
+
+                }
+
+                if (dados["solidos"]["cones"][i]["raio"].empty()) {
+
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O raio do " + std::to_string(i+1) + "º cone criado não foi especificado."));
+
+                }
+
+                if (dados["solidos"]["cones"][i]["altura"].empty()) {
+
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": A altura do " + std::to_string(i+1) + "º cone criado não foi especificada."));
+
+                }
+
+                if (dados["solidos"]["cones"][i]["material"].empty()) {
+
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material do " + std::to_string(i+1) + "º cone criado não foi especificado."));
+
+                }
+
+                // Criando o cone.
+                std::shared_ptr<Cone> cone = std::make_shared<Cone>();
+
+                cone->set_centro_base(Ponto3(dados["solidos"]["cones"][i]["centro_base"][0], dados["solidos"]["cones"][i]["centro_base"][1], dados["solidos"]["cones"][i]["centro_base"][2]), false);
+
+                cone->set_direcao(Vetor3(dados["solidos"]["cones"][i]["direcao"][0], dados["solidos"]["cones"][i]["direcao"][1], dados["solidos"]["cones"][i]["direcao"][2]), false);
+
+                cone->set_raio_base(dados["solidos"]["cones"][i]["raio"]);
+
+                cone->set_altura(dados["solidos"]["cones"][i]["altura"]);
+
+                std::size_t j = 0;
+
+                // Percorrendo o vetor de materiais para ver se o material utilizado pelo cone existe.
+                while (j < materiais.size() && materiais[j].get_nome() != dados["solidos"]["cones"][i]["material"])
+                    j++;
+
+                if (j < materiais.size()) {
+
+                    cone->set_material(materiais[j]);
+
+                } else {
+
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material do " + std::to_string(i+1) + "º cone criado não existe."));
+
+                }
+
+                // Guardando o cone.
+                solidos.push_back(std::move(cone));
+
+            }
+
+        }
+
+        // Checando se tem algum triangulo especificado.
+        if (!dados["solidos"]["triangulos"].empty()) {
+
+            // Iterando sobre os triângulos especificados para inserí-los na cena.
+            for (std::size_t i = 0; i < dados["solidos"]["triangulos"].size(); i++) {
+
+                if (dados["solidos"]["triangulos"][i]["vertice1"].empty()) {
+
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O vértice 1 do " + std::to_string(i+1) + "º triângulo criado não foi especificado."));
+
+                }
+
+                if (dados["solidos"]["triangulos"][i]["vertice2"].empty()) {
+
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O vértice 2 do " + std::to_string(i+1) + "º triângulo criado não foi especificado."));
+
+                }
+
+                if (dados["solidos"]["triangulos"][i]["vertice3"].empty()) {
+
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O vértice 3 do " + std::to_string(i+1) + "º triângulo criado não foi especificado."));
+
+                }
+
+                if (dados["solidos"]["triangulos"][i]["material"].empty()) {
+
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material do " + std::to_string(i+1) + "º triângulo criado não foi especificado."));
+
+                }
+
+                // Criando o triângulo.
+                std::shared_ptr<Triangulo> triangulo = std::make_shared<Triangulo>();
+
+                triangulo->set_vertice1(Ponto3(dados["solidos"]["triangulos"][i]["vertice1"][0], dados["solidos"]["triangulos"][i]["vertice1"][1], dados["solidos"]["triangulos"][i]["vertice1"][2]));
+
+                triangulo->set_vertice1(Ponto3(dados["solidos"]["triangulos"][i]["vertice2"][0], dados["solidos"]["triangulos"][i]["vertice2"][1], dados["solidos"]["triangulos"][i]["vertice2"][2]));
+
+                triangulo->set_vertice1(Ponto3(dados["solidos"]["triangulos"][i]["vertice3"][0], dados["solidos"]["triangulos"][i]["vertice3"][1], dados["solidos"]["triangulos"][i]["vertice3"][2]));
+
+                std::size_t j = 0;
+
+                // Percorrendo o vetor de materiais para ver se o material utilizado pelo triângulo existe.
+                while (j < materiais.size() && materiais[j].get_nome() != dados["solidos"]["triangulos"][i]["material"])
+                    j++;
+
+                if (j < materiais.size()) {
+
+                    triangulo->set_material(materiais[j]);
+
+                } else {
+
+                    throw std::runtime_error(std::string("Erro no arquivo " + nome_arquivo_JSON + ": O material do " + std::to_string(i+1) + "º triângulo criado não existe."));
+
+                }
+
+                // Guardando o triângulo.
+                solidos.push_back(std::move(triangulo));
+
+            }
+
+        }
+
+    }
+
+    return solidos;
 
 }
 

@@ -91,6 +91,8 @@ void Canvas::calcular_cores(Cena& cena) {
     // Posição na janela do campo de visão por onde passará um raio.
     Ponto3 centro_pixel;
 
+    hit_info interseccao;
+
     // Iterando no campo de visão.
     for (std::size_t l = 0; l < this->get_altura(); l++) {
         
@@ -107,7 +109,10 @@ void Canvas::calcular_cores(Cena& cena) {
             raio = Raio(cena.get_camera().get_posicao(), centro_pixel);
 
             // Lançando o raio e guardando informações da intersecção.
-            std::tie(this->pixel_buffer[l][c], this->matriz_solidos[l][c], this->matriz_malhas[l][c]) = cena.retorna_interseccao(raio, this->get_cor_padrao());
+            interseccao = cena.retorna_interseccao(raio, this->get_cor_padrao());
+            this->pixel_buffer[l][c] = interseccao.cor;
+            this->matriz_solidos[l][c] = interseccao.solido;
+            this->matriz_malhas[l][c] = interseccao.malha;
 
         }
 
